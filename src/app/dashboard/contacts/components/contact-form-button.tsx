@@ -114,10 +114,10 @@ const CreateContactFormButton = (props: CreateContactFormButtonProps) => {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Edit profile</DialogTitle>
+                        <DialogTitle>New Contact</DialogTitle>
                         <DialogDescription>
                             {/* eslint-disable-next-line react/no-unescaped-entities */}
-                            Make changes to your profile here. Click save when you're done.
+                            Add new contact information here. Click save when you're done.
                         </DialogDescription>
                     </DialogHeader>
 
