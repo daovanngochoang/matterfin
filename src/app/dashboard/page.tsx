@@ -13,4 +13,4 @@ const Dashboard = () => {
 }
 
 
-module.exports = Dashboard
+export default Dashboard;
