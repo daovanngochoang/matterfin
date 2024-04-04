@@ -15,7 +15,7 @@ export default authMiddleware({
     ],
     afterAuth(auth, req, evt) {
         // Handle users who aren't authenticated
-        if (!auth.userId && !auth.isPublicRoute) {
+        if (!auth.userId && !auth.isPublicRoute && req.nextUrl.pathname != SIGN_IN_PATH) {
             return redirectToSignIn({returnBackUrl: req.url});
         }
 
@@ -47,8 +47,6 @@ export default authMiddleware({
 
             }
         }
-
-
 
         // Allow users visiting public routes to access them
         return NextResponse.next();
