@@ -93,7 +93,8 @@ export function NewOrganizationForm() {
 
         setAlertOpen(false)
 
-        router.push(DASHBOARD_PATH)
+        // router.push(DASHBOARD_PATH)
+        redirect(DASHBOARD_PATH)
       } else {
         toast({
           title: "Unexpected error",
