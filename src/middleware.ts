@@ -25,27 +25,24 @@ export default authMiddleware({
             console.log("auth.userId && !auth.isPublicRoute")
 
             if (auth.sessionClaims != null) {
-                console.log("auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH")
-                if (req.nextUrl.pathname != CREATE_ORGANIZATION_PATH) {
+                if (req.nextUrl.pathname !== CREATE_ORGANIZATION_PATH) {
+                    console.log("req.nextUrl.pathname != CREATE_ORGANIZATION_PATH")
+
                     const memberships = auth.sessionClaims.memberships;
                     console.log("MEMBERSHIP:", memberships)
                     if (memberships == null || memberships == undefined || Object.keys(memberships).length == 0) {
                         console.log("Object.keys(memberships).length == 0")
                         return NextResponse.redirect(new URL(CREATE_ORGANIZATION_PATH, req.url))
                     }
-                } if (
+                } else if (
                     auth.userId &&
                     !auth.orgId &&
                     req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH
                 ) {
-                    console.log("auth.userId &&\n" +
-                        "                    !auth.orgId &&\n" +
-                        "                    req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH")
+                    console.log(" req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH")
                     const orgSelection = new URL(SELECT_ORGANIZATION_PATH, req.url);
                     return NextResponse.redirect(orgSelection);
                 }
-
-
             }
         }
 
