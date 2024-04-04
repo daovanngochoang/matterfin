@@ -12,32 +12,33 @@ export default authMiddleware({
       return NextResponse.redirect(new URL(DASHBOARD_PATH, req.url))
     }
 
-    // // Handle users who aren't authenticated
-    // else if (!auth.userId && !auth.isPublicRoute) {
-    //   return redirectToSignIn({ returnBackUrl: req.url });
-    // }
-    // // Redirect signed in users to organization selection page if they are not active in an organization
-    // else if (auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH) {
-    //   const memberships = auth.sessionClaims.memberships;
-    //   if (Object.keys(memberships).length == 0) {
-    //     return NextResponse.redirect(new URL(CREATE_ORGANIZATION_PATH, req.url))
-    //   } else {
-    //     if (
-    //       auth.userId &&
-    //       !auth.orgId &&
-    //       req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH
-    //     ) {
-    //       const orgSelection = new URL(SELECT_ORGANIZATION_PATH, req.url);
-    //       return NextResponse.redirect(orgSelection);
-    //     }
-    //
-    //   }
-    // }
-    //
-    // // If the user is signed in and trying to access a protected route, allow them to access route
-    // if (auth.userId && !auth.isPublicRoute) {
-    //   return NextResponse.next();
-    // }
+    // Handle users who aren't authenticated
+    else if (!auth.userId && !auth.isPublicRoute) {
+      return redirectToSignIn({ returnBackUrl: req.url });
+    }
+
+    // Redirect signed in users to organization selection page if they are not active in an organization
+    else if (auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH) {
+      const memberships = auth.sessionClaims.memberships;
+      if (Object.keys(memberships).length == 0) {
+        return NextResponse.redirect(new URL(CREATE_ORGANIZATION_PATH, req.url))
+      } else {
+        if (
+          auth.userId &&
+          !auth.orgId &&
+          req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH
+        ) {
+          const orgSelection = new URL(SELECT_ORGANIZATION_PATH, req.url);
+          return NextResponse.redirect(orgSelection);
+        }
+
+      }
+    }
+
+    // If the user is signed in and trying to access a protected route, allow them to access route
+    if (auth.userId && !auth.isPublicRoute) {
+      return NextResponse.next();
+    }
     // Allow users visiting public routes to access them
     return NextResponse.next();
   },
