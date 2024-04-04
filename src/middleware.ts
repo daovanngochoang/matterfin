@@ -8,12 +8,10 @@ export default authMiddleware({
   ],
   afterAuth(auth, req, evt) {
 
-    if (req.nextUrl.pathname == HOME_PATH) {
-      return NextResponse.redirect(new URL(DASHBOARD_PATH, req.url))
-    }
+
 
     // Handle users who aren't authenticated
-    else if (!auth.userId && !auth.isPublicRoute) {
+    if (!auth.userId && !auth.isPublicRoute) {
       return redirectToSignIn({ returnBackUrl: req.url });
     }
 
@@ -33,6 +31,8 @@ export default authMiddleware({
         }
 
       }
+    } else if (req.nextUrl.pathname == HOME_PATH) {
+      return NextResponse.redirect(new URL(DASHBOARD_PATH, req.url))
     }
 
     // // If the user is signed in and trying to access a protected route, allow them to access route
