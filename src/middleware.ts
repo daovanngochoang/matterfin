@@ -35,10 +35,10 @@ export default authMiddleware({
       }
     }
 
-    // If the user is signed in and trying to access a protected route, allow them to access route
-    if (auth.userId && !auth.isPublicRoute) {
-      return NextResponse.next();
-    }
+    // // If the user is signed in and trying to access a protected route, allow them to access route
+    // if (auth.userId && !auth.isPublicRoute) {
+    //   return NextResponse.next();
+    // }
     // Allow users visiting public routes to access them
     return NextResponse.next();
   },
