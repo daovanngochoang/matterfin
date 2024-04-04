@@ -5,7 +5,8 @@ import {
     DASHBOARD_PATH,
     HOME_PATH,
     SELECT_ORGANIZATION_PATH,
-    SIGN_IN_PATH, SIGN_UP_PATH
+    SIGN_IN_PATH,
+    SIGN_UP_PATH
 } from "@/constants/routingPath";
 
 export default authMiddleware({
@@ -19,6 +20,29 @@ export default authMiddleware({
             return redirectToSignIn({returnBackUrl: req.url});
         }
 
+        // if (auth.userId && !auth.isPublicRoute) {
+        //     if (auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH) {
+        //         console.log("auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH")
+        //         return NextResponse.redirect(new URL(CREATE_ORGANIZATION_PATH, req.url))
+        //     } else {
+        //         // if (
+        //         //     auth.userId &&
+        //         //     !auth.orgId &&
+        //         //     req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH
+        //         // ) {
+        //         //
+        //         //     const orgSelection = new URL(SELECT_ORGANIZATION_PATH, req.url);
+        //         //     return NextResponse.redirect(orgSelection);
+        //         // }
+        //         // If the user is signed in and trying to access a protected route, allow them to access route
+        //         if (auth.userId && !auth.isPublicRoute) {
+        //             if (req.nextUrl.pathname == HOME_PATH) {
+        //                 return NextResponse.redirect(new URL(DASHBOARD_PATH, req.url))
+        //             }
+        //         }
+        //
+        //     }
+        // }
         // Redirect signed in users to organization selection page if they are not active in an organization
         else if (auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH) {
             console.log("auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH")
@@ -32,14 +56,12 @@ export default authMiddleware({
                     !auth.orgId &&
                     req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH
                 ) {
-                     console.log(" auth.userId &&\n" +
-                         "                    !auth.orgId &&\n" +
-                         "                    req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH")
+
                     const orgSelection = new URL(SELECT_ORGANIZATION_PATH, req.url);
                     return NextResponse.redirect(orgSelection);
                 }
                 // If the user is signed in and trying to access a protected route, allow them to access route
-                else if (auth.userId && !auth.isPublicRoute) {
+                if (auth.userId && !auth.isPublicRoute) {
                     if (req.nextUrl.pathname == HOME_PATH) {
                         return NextResponse.redirect(new URL(DASHBOARD_PATH, req.url))
                     }
