@@ -1,6 +1,7 @@
 export const HOME_PATH: string = "/";
 export const SIGN_IN_PATH: string = "/sign-in";
 export const SIGN_OUT_PATH: string = "/sign-out";
+export const SIGN_UP_PATH: string = "/sign-up"
 export const CONTACT_BOOK: string = "/dashboard/contacts";
 export const PAYMENT_METHOD: string = "/dashboard/payment-methods";
 export const ACCOUNT_SETTING: string = "/dashboard/account-settings";
