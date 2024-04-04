@@ -5,22 +5,22 @@ import {Action, TableName} from "@/lib/repository/enums";
 import {RepoResult} from "@/lib/repository/result";
 
 
-export interface Repository<T> {
+export interface Repository<I, T> {
 
-    audit(user_id: string, action: Action, org_id?: string, data?: T): Promise<void>;
+    audit(user_id: string, action: Action, org_id: string, data?: T): Promise<void>;
 
-    create(user_id: string, data: T, org_id?: string): Promise<RepoResult<boolean>>;
+    create(user_id: string, data: T, org_id: string): Promise<RepoResult<boolean>>;
 
-    update(user_id: string, data: T, org_id?: string): Promise<RepoResult<T>>;
+    update(id: I, user_id: string, data: T, org_id: string): Promise<RepoResult<T>>;
 
-    getAll(user_id: string, org_id?: string): Promise<RepoResult<Array<T>>>;
+    getAll(org_id: string): Promise<RepoResult<Array<T>>>;
 
-    getByPage(user_id: string, page: number, org_id?: string): Promise<RepoResult<Array<T>>>;
+    getByPage(page: number, org_id: string): Promise<RepoResult<Array<T>>>;
 
-    delete(user_id: string, id: number, org_id?: string): Promise<RepoResult<boolean>>;
+    delete(user_id: string, id: I, org_id: string): Promise<RepoResult<boolean>>;
 }
 
-export abstract class SupabaseRepository<T> implements Repository<T> {
+export abstract class SupabaseRepository<I, T> implements Repository<I, T> {
     protected dbClient: SupabaseClient;
     protected table: TableName;
 
@@ -43,15 +43,15 @@ export abstract class SupabaseRepository<T> implements Repository<T> {
         }
     }
 
-    abstract create(user_id: string, data: T, org_id?: string | undefined): Promise<RepoResult<boolean>> ;
+    abstract create(user_id: string, data: T, org_id: string | undefined): Promise<RepoResult<boolean>> ;
 
-    abstract update(user_id: string, data: T, org_id?: string | undefined): Promise<RepoResult<T>> ;
+    abstract update(id: I, user_id: string, data: T, org_id: string | undefined): Promise<RepoResult<T>> ;
 
-    abstract getAll(user_id: string, org_id?: string | undefined): Promise<RepoResult<T[]>> ;
+    abstract getAll(org_id: string | undefined): Promise<RepoResult<T[]>> ;
 
-    abstract getByPage(user_id: string, page: number, org_id?: string | undefined): Promise<RepoResult<T[]>> ;
+    abstract getByPage(page: number, org_id: string | undefined): Promise<RepoResult<T[]>> ;
 
-    abstract delete(user_id: string, id: number, org_id?: string | undefined): Promise<RepoResult<boolean>> ;
+    abstract delete(user_id: string, id: I, org_id: string | undefined): Promise<RepoResult<boolean>> ;
 
 
 }

@@ -1,12 +1,11 @@
 import React from 'react';
-import DataTable from "@/app/dashboard/contacts/components/data-table";
+import ContactTable from "@/app/dashboard/contacts/components/contact-table";
 // import serverActions from "@/lib/serverActions";
 import {currentUser} from "@clerk/nextjs";
-import {createContact, getAllContacts} from "@/lib/actions/contactAction";
+import {getAllContacts} from "@/lib/actions/contactAction";
 
 
 const Contacts = async () => {
-
     const user = await currentUser();
     const {data} = await getAllContacts()
 
@@ -25,9 +24,9 @@ const Contacts = async () => {
                         </div>
                     </div>
 
-                    <DataTable
+                    <ContactTable
                         contacts={data ?? []}
-                        createAction={createContact}/>
+                    />
                 </div>
             </div>
         </>

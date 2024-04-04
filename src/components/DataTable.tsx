@@ -1,6 +1,5 @@
-"use client"
-
-import * as React from "react"
+import * as React from "react";
+import {useState} from "react";
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -10,104 +9,40 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     SortingState,
+    Table,
     useReactTable,
-    VisibilityState,
-} from "@tanstack/react-table"
-import {ArrowUpDown, MoreHorizontal} from "lucide-react"
+    VisibilityState
+} from "@tanstack/react-table";
+import {Button} from "@/components/ui/button";
+import {Table as CustomUITable, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {Input} from "@/components/ui/input";
 
-import {Button} from "@/components/ui/button"
-import {Input} from "@/components/ui/input"
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
-import Contact from "@/lib/model/contact";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import CreateContactFormButton from "@/app/dashboard/contacts/components/contact-form-button";
-import {CreateAction} from "@/lib/actions/actionType";
-import {useState} from "react";
+type SetTable<T> = (table: Table<T>) => void;
 
-
-type DataTableProps = {
-    contacts: Contact[],
-    createAction: CreateAction<Contact, boolean>
+interface DataTableProps<TData, TValue> {
+    columns: ColumnDef<TData, TValue>[]
+    data: TData[];
+    setTable?: SetTable<TData>;
+    actions?: React.ReactNode[]
+    searchColumn: string
 }
 
-export default function DataTable({...props}: DataTableProps) {
+
+export default function DataTable<TData, TValue>(
+    {
+        columns,
+        data,
+        setTable,
+        actions,
+        searchColumn
+    }: DataTableProps<TData, TValue>,
+) {
 
     const [pagination, setPagination] = useState({
         pageIndex: 0, //initial page index
         pageSize: 10, //page size
     });
 
-    const columns: ColumnDef<Contact>[] = [
-        {
-            accessorKey: "name",
-            header: "Name",
-            cell: ({row}) => (
-                <div>{row.getValue("name")} </div>
-            ),
-        },
-        {
-            accessorKey: "company_name",
-            header: "Company",
-            cell: ({row}) => {
-                return (
-                    <div>{row.getValue("company_name")}</div>
-                )
-            },
-        },
-        {
-            accessorKey: "email",
-            header: ({column}) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        className="items-start px-0"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    >
-                        Email
-                        <ArrowUpDown className="ml-2 h-4 w-4"/>
-                    </Button>
-                )
-            },
-            cell: ({row}) => <div className="lowercase">{row.getValue("email")}</div>,
-        },
-        {
-            accessorKey: "phone",
-            header: "Phone",
-            cell: ({row}) => {
-                return <div>{row.getValue('phone')}</div>
-            },
-        },
-        {
-            id: "actions",
-            header: "Actions",
-            enableHiding: false,
-            cell: ({row}) => {
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4"/>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>
-                                Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                )
-            },
-        },
-    ]
 
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -118,13 +53,13 @@ export default function DataTable({...props}: DataTableProps) {
     const [rowSelection, setRowSelection] = React.useState({})
 
     const table = useReactTable({
-        data: props.contacts,
+        data: data,
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        rowCount: props.contacts.length,
+        rowCount: data.length,
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
@@ -139,34 +74,33 @@ export default function DataTable({...props}: DataTableProps) {
         },
     })
 
+    if (setTable !== undefined) {
+        setTable(table)
+    }
+
     return (
         <div className="w-full">
+
             <div className="flex items-center py-4 justify-between">
-                <Input
-                    placeholder="Filter emails..."
-                    value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("email")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
-
+                {
+                    searchColumn !== undefined ?
+                        <Input
+                            placeholder={`Filter ${searchColumn}s...`}
+                            value={(table.getColumn(searchColumn)?.getFilterValue() as string) ?? ""}
+                            onChange={(event) =>
+                                table.getColumn(searchColumn)?.setFilterValue(event.target.value)
+                            }
+                            className="max-w-sm"
+                        /> :
+                        <></>
+                }
                 <div className="flex gap-4">
-                    <CreateContactFormButton action={props.createAction}/>
-
-                    {/*  Add Later => Import from csv file*/}
-
-                    {/*  <Button size="sm" className="h-8 gap-1">*/}
-                    {/*      <Import className="h-3.5 w-3.5"/>*/}
-                    {/*      <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">*/}
-                    {/*  Import Contacts*/}
-                    {/*</span>*/}
-                    {/*  </Button>*/}
+                    {actions !== undefined ? actions.map((action, key) => (<div key={key}>{action}</div>)) : []}
                 </div>
 
             </div>
             <div className="rounded-md border">
-                <Table>
+                <CustomUITable>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
@@ -213,7 +147,7 @@ export default function DataTable({...props}: DataTableProps) {
                             </TableRow>
                         )}
                     </TableBody>
-                </Table>
+                </CustomUITable>
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 {/*<div className="flex-1 text-sm text-muted-foreground">*/}

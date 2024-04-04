@@ -4,7 +4,9 @@ import {OrganizationProfile} from "@clerk/nextjs";
 function OrganizationPage() {
     return (
         <>
-            <OrganizationProfile/>
+            <div className="flex w-full h-full flex-grow">
+                <OrganizationProfile/>
+            </div>
         </>
     )
 }

@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
+import { auth, ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 import HeaderBar from "@/components/HeaderBar";
 import { ThemeProvider } from "@/components/theme-provider"
+import SyncOrganization from "@/components/SyncOrganiation";
+import { Loader2 } from "lucide-react";
+import * as React from "react";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,6 +17,9 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
+
+  const { sessionClaims } = auth()
+
   return (
     <ClerkProvider>
       <html lang='en' suppressHydrationWarning>
@@ -25,12 +32,25 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
           >
             <main>
               <div className="min-h-screen">
-                <HeaderBar />
-                <div className="w-full">
-                  <div>{children}</div>
-                </div>
+                <ClerkLoaded>
+                  <SyncOrganization memberships={sessionClaims?.memberships!} />
+                  <HeaderBar />
+                  <div className="w-full">
+                    <div>{children}</div>
+                  </div>
+                </ClerkLoaded>
+                <ClerkLoading>
+                  <div className="flex w-screen h-screen justify-center items-center">
+                    <div className="flex gap-2">
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Please wait ...
+                    </div>
+
+                  </div>
+                </ClerkLoading>
               </div>
             </main>
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

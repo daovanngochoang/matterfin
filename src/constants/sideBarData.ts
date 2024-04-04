@@ -1,5 +1,5 @@
-import {ACCOUNT_SETTING, DASHBOARD_PATH, CONTACT_BOOK, PAYMENT_METHOD} from "./routingPath";
-import {Contact, LayoutDashboard, LucideIcon, Settings, WalletCards} from "lucide-react"
+import {ACCOUNT_SETTING, DASHBOARD_PATH, CONTACT_BOOK, PAYMENT_METHOD, ORGANIZATION_PATH} from "./routingPath";
+import {Building2, Contact, LayoutDashboard, LucideIcon, Settings, WalletCards} from "lucide-react"
 
 
 type SideBarItem = {
@@ -29,6 +29,11 @@ const SideBarData: Array<SideBarItem> = [
         name: "Account & Settings",
         link: ACCOUNT_SETTING,
         icon: Settings
+    },
+    {
+        name: "Organization",
+        link: ORGANIZATION_PATH,
+        icon: Building2
     }
 ]
 

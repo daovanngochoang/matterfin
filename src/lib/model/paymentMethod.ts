@@ -1,7 +1,7 @@
 export type PaymentMethod = {
   id: number;
   method_name: string;
-  org_id: number;
+  org_id: string;
   is_active: boolean;
   information?: string;
   created_at?: Date | null;

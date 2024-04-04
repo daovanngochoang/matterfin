@@ -1,0 +1,14 @@
+
+
+1. Deploy on Vercel:
+- Add domain to the project.
+  - if there is another use the same root domain -> add the txt record to the DNS manager.
+
+2. Create Production instance for Clerk.
+
+23. Config Oauth2.
+- config Oauth2 for google 
+- Oauth2 for github.
+Notes: with clerk redirect url which is in the Oauth2 detail
+
+4. Config DNS for Clerk follow the DNS Page of clerk.
