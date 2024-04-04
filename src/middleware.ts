@@ -27,17 +27,20 @@ export default authMiddleware({
             if (auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH) {
                 console.log("auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH")
                 const memberships = auth.sessionClaims.memberships;
-                if (Object.keys(memberships).length == 0) {
+
+                if ( memberships != null && memberships != undefined &&Object.keys(memberships).length == 0) {
                     console.log("Object.keys(memberships).length == 0")
                     return NextResponse.redirect(new URL(CREATE_ORGANIZATION_PATH, req.url))
                 }
-                // return NextResponse.redirect(new URL(CREATE_ORGANIZATION_PATH, req.url))
             } else {
                 if (
                     auth.userId &&
                     !auth.orgId &&
                     req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH
                 ) {
+                    console.log("auth.userId &&\n" +
+                        "                    !auth.orgId &&\n" +
+                        "                    req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH")
                     const orgSelection = new URL(SELECT_ORGANIZATION_PATH, req.url);
                     return NextResponse.redirect(orgSelection);
                 }
@@ -47,6 +50,7 @@ export default authMiddleware({
 
         // If the user is signed in and trying to access a protected route, allow them to access route
         if (auth.userId && !auth.isPublicRoute) {
+            console.log("auth.userId && !auth.isPublicRoute")
             if (req.nextUrl.pathname == HOME_PATH) {
                 return NextResponse.redirect(new URL(DASHBOARD_PATH, req.url))
             }
