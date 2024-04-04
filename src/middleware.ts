@@ -28,20 +28,22 @@ export default authMiddleware({
                 const memberships = auth.sessionClaims.memberships;
                 console.log("MEMBERSHIP:", memberships)
 
-                if ((memberships == undefined || Object.keys(memberships).length == 0) && req.nextUrl.pathname !== CREATE_ORGANIZATION_PATH) {
+                if (Object.keys(memberships).length == 0 && req.nextUrl.pathname !== CREATE_ORGANIZATION_PATH) {
                     console.log("req.nextUrl.pathname != CREATE_ORGANIZATION_PATH")
                     console.log("Object.keys(memberships).length == 0")
                     return NextResponse.redirect(new URL(CREATE_ORGANIZATION_PATH, req.url))
-                } else if (
-                    auth.userId &&
-                    !auth.orgId &&
-                    req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH
-                    && memberships != undefined
-                ) {
-                    console.log(" req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH")
-                    const orgSelection = new URL(SELECT_ORGANIZATION_PATH, req.url);
-                    return NextResponse.redirect(orgSelection);
                 }
+
+                // else if (
+                //     auth.userId &&
+                //     !auth.orgId &&
+                //     req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH
+                //     && Object.keys(memberships).length >= 1
+                // ) {
+                //     console.log(" req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH")
+                //     const orgSelection = new URL(SELECT_ORGANIZATION_PATH, req.url);
+                //     return NextResponse.redirect(orgSelection);
+                // }
             }
         }
 
