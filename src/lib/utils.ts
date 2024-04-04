@@ -15,3 +15,5 @@ export function errorLog(error: string) {
   //   fs.appendFileSync(logPath, error);
   // }
 }
+
+

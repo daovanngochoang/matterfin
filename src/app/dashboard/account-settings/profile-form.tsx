@@ -1,191 +1,202 @@
+
+
 "use client"
-
-import Link from "next/link"
+import type { UserResource } from '@clerk/types';
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/use-toast"
+import * as React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import { useState } from "react"
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserIcon } from "lucide-react"
+import DragDropFileSelector from "@/components/DragDropFileSelector"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Separator } from "@/components/ui/separator"
+import { User } from "@clerk/nextjs/server"
+import { useUser } from "@clerk/nextjs"
 
 const profileFormSchema = z.object({
-    username: z
-        .string()
-        .min(2, {
-            message: "Username must be at least 2 characters.",
-        })
-        .max(30, {
-            message: "Username must not be longer than 30 characters.",
-        }),
-    email: z
-        .string({
-            required_error: "Please select an email to display.",
-        })
-        .email(),
-    bio: z.string().max(160).min(4),
-    urls: z
-        .array(
-            z.object({
-                value: z.string().url({ message: "Please enter a valid URL." }),
-            })
-        )
-        .optional(),
+  firstname: z
+    .string({
+      required_error: "First name cannot be empty."
+    }).min(1, "First name cannot be empty."),
+  lastname: z
+    .string({
+      required_error: "Last name cannot be empty.",
+    }).min(1, "Last name cannot be empty.")
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-// This can come from your database or API.
-const defaultValues: Partial<ProfileFormValues> = {
-    bio: "I own a computer.",
-    urls: [
-        { value: "https://shadcn.com" },
-        { value: "http://twitter.com/shadcn" },
-    ],
+
+type ProfileFormProps = {
+  open: boolean
+  onOpenChange: React.Dispatch<React.SetStateAction<boolean>>
+  children: React.ReactNode
 }
 
-export default function ProfileForm() {
-    const form = useForm<ProfileFormValues>({
-        resolver: zodResolver(profileFormSchema),
-        defaultValues,
-        mode: "onChange",
-    })
+export default function ProfileForm({
+  open,
+  onOpenChange,
+  children,
+}: ProfileFormProps) {
 
-    const { fields, append } = useFieldArray({
-        name: "urls",
-        control: form.control,
-    })
 
-    function onSubmit(data: ProfileFormValues) {
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+  const { user } = useUser()
+
+
+  // This can come from your database or API.
+  const defaultValues: Partial<ProfileFormValues> = {
+    firstname: user!.firstName ?? undefined,
+    lastname: user!.lastName ?? undefined,
+  }
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues,
+    mode: "onChange",
+  })
+
+
+  const [profileImage, setProfileImage] = useState<File | undefined>()
+  const [openFileSelector, setOpenFileSelector] = useState<boolean>(false)
+  function onSubmit(data: ProfileFormValues) {
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
         </pre>
-            ),
-        })
-    }
+      ),
+    })
+  }
 
-    return (
+
+
+  function profilePhoto( user: UserResource): React.ReactNode {
+    if (profileImage == undefined) {
+      if (user.hasImage) {
+        return (
+          <>
+            {/* <Avatar> */}
+            <AvatarImage src={user.imageUrl} alt="profile image" />
+            <AvatarFallback>{`${user.firstName}${user.lastName}`}</AvatarFallback>
+            {/* </Avatar> */}
+          </>
+        )
+      }
+      return <UserIcon className="w-16 h-16" />
+    } else {
+      return (<>
+        {/* <Avatar> */}
+        <AvatarImage src={window.URL.createObjectURL(profileImage)} alt="profile image" />
+        <AvatarFallback>{`${user.firstName}${user.lastName}`}</AvatarFallback>
+        {/* </Avatar> */}
+      </>)
+    }
+  }
+
+  return (
+    <Popover open={open} onOpenChange={onOpenChange}>
+      <PopoverTrigger asChild>
+        {children}
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px] space-y-4">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h3 className="text-lg font-medium">Edit Profile</h3>
+            <p className="text-sm text-muted-foreground">
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
+              Make changes to your profile here. Click save when you're done.
+            </p>
+          </div>
+          <Separator />
+        </div>
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                                <Input placeholder="shadcn" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                This is your public display name. It can be your real name or a
-                                pseudonym. You can only change this once every 30 days.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a verified email to display" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="m@example.com">m@example.com</SelectItem>
-                                    <SelectItem value="m@google.com">m@google.com</SelectItem>
-                                    <SelectItem value="m@support.com">m@support.com</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormDescription>
-                                You can manage verified email addresses in your{" "}
-                                <Link href="/examples/forms">email settings</Link>.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="bio"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Bio</FormLabel>
-                            <FormControl>
-                                <Textarea
-                                    placeholder="Tell us a little bit about yourself"
-                                    className="resize-none"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormDescription>
-                                You can <span>@mention</span> other users and organizations to
-                                link to them.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <div>
-                    {fields.map((field, index) => (
-                        <FormField
-                            control={form.control}
-                            key={field.id}
-                            name={`urls.${index}.value`}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className={cn(index !== 0 && "sr-only")}>
-                                        URLs
-                                    </FormLabel>
-                                    <FormDescription className={cn(index !== 0 && "sr-only")}>
-                                        Add links to your website, blog, or social media profiles.
-                                    </FormDescription>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    ))}
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => append({ value: "" })}
-                    >
-                        Add URL
-                    </Button>
-                </div>
-                <Button type="submit">Update profile</Button>
-            </form>
+          <div className="flex gap-3">
+            <div>
+              <Avatar className="w-16 h-16 ">
+                {profilePhoto(user!)}
+              </Avatar>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <div className="flex gap-2 items-center">
+                <DragDropFileSelector
+                  open={openFileSelector}
+                  onOpenChange={setOpenFileSelector}
+                  handleDrop={(e) => { }}
+                  handleSelect={(e) => { }}
+                >
+                  <Button variant="outline">
+                    Upload
+                  </Button>
+                </DragDropFileSelector>
+                <Button variant="ghost" className="text-destructive hover:text-destructive">Remove</Button>
+              </div>
+             <p className="text-muted-foreground text-xs ">Recommended size 1:1, up to 10MB.</p>
+            </div>
+          </div>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="firstname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Firstname</FormLabel>
+                  <FormControl>
+                    <Input
+                      required={true}
+                      placeholder="Enter your firstname"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div>
+              <FormField
+                control={form.control}
+                name="lastname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Lastname
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your Lastname"
+                        required={true}
+                        {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
         </Form>
-    )
+      </PopoverContent>
+    </Popover >
+  )
 }
+
+

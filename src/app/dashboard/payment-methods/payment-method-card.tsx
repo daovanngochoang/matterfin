@@ -62,8 +62,8 @@ export default function PaymentMethodCard(
 
 
     const statusStyle = {
-        active: "bg-green-200 text-green-500",
-        inActive: "bg-red-200 text-red-500"
+        active: "bg-green-200 text-green-500 hover:bg-secondary",
+        inActive: "bg-red-200 text-red-500 hover:bg-secondary"
     }
 
     return (
@@ -75,7 +75,7 @@ export default function PaymentMethodCard(
                         name="information"
                         render={({field}) => (
                             <FormItem>
-                                <FormLabel className="flex justify-between items-center">
+                                <FormLabel className="flex justify-between items-center ">
                                     <div>{method.method_name}</div>
                                     <Badge className={method.is_active ? statusStyle.active : statusStyle.inActive}
                                            variant="outline"
@@ -86,7 +86,7 @@ export default function PaymentMethodCard(
                                 <FormControl>
                                     <Textarea
                                         disabled
-                                        className="min-h-[300px]"
+                                        className="min-h-[200px]"
                                         placeholder={placeholder == undefined ? "Enter payment method information here" : placeholder} {...field} />
                                 </FormControl>
                                 <FormDescription>

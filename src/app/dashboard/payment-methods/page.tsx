@@ -50,6 +50,36 @@ const PaymentMethods = () => {
                             activate={(method) => {console.log(method)}}
                             edit={(method) => {console.log(method)}}
                         />
+
+                        <PaymentMethodCard
+                            disabled={true}
+                            method={
+                                {
+                                    id: 1,
+                                    method_name: "International Bank Transfer",
+                                    org_id: "",
+                                    is_active: false,
+                                    information: "",
+                                }
+                            }
+                            activate={(method) => {console.log(method)}}
+                            edit={(method) => {console.log(method)}}
+                        />
+                        <PaymentMethodCard
+                            disabled={true}
+                            method={
+                                {
+                                    id: 1,
+                                    method_name: "Card Payment",
+                                    org_id: "",
+                                    is_active: false,
+                                    information: "",
+                                }
+                            }
+                            activate={(method) => {console.log(method)}}
+                            edit={(method) => {console.log(method)}}
+                        />
+
                     </div>
 
 

@@ -35,7 +35,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/components/ui/use-toast"
 import { DASHBOARD_PATH } from "@/constants/routingPath";
-import {redirect, useRouter} from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
+import DragDropFileSelector from "@/components/DragDropFileSelector"
 
 const FormSchema = z.object({
   orgName: z.string(
@@ -49,7 +50,7 @@ const FormSchema = z.object({
 export function NewOrganizationForm() {
 
   const [orgLogo, setOrLogo] = useState<File | null>(null)
-  const [open, setOpen] = useState<boolean>()
+  const [open, setOpen] = useState<boolean>(false)
   const { toast } = useToast()
   const [alertOpen, setAlertOpen] = useState<boolean>(false)
   const [pending, setPending] = useState(false)
@@ -163,29 +164,39 @@ export function NewOrganizationForm() {
                 </div>
                 <div className=" flex flex-col justify-center">
                   <p className="text-sm">Logo</p>
-                  <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger asChild>
-                      <Button onClick={() => setOpen(true)} variant="link" className="h-5 pl-0">
-                        Choose logo
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Select Logo</DialogTitle>
-                        <DialogDescription>
-                          Drag and Drop or click select to select your organization logo.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <Card>
-                        <div onDrop={handleDropEvent} onDragOver={allowDrop} className="w-full h-32 flex justify-center items-center ">
-                          <CloudUpload className="w-16 h-16 opacity-60" />
-                        </div>
-                      </Card>
-                      <DialogFooter>
-                        <Input type="file" onChange={handleOnChangeEvent} />
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                  <DragDropFileSelector
+                    open={open}
+                    onOpenChange={setOpen}
+                    handleDrop={handleDropEvent}
+                    handleSelect={handleOnChangeEvent}
+                  >
+                    <Button onClick={() => setOpen(true)} variant="link" className="h-5 pl-0">
+                      Choose logo
+                    </Button>
+                  </DragDropFileSelector>
+                  {/*<Dialog open={open} onOpenChange={setOpen}>*/}
+                  {/*  <DialogTrigger asChild>*/}
+                  {/*    <Button onClick={() => setOpen(true)} variant="link" className="h-5 pl-0">*/}
+                  {/*      Choose logo*/}
+                  {/*    </Button>*/}
+                  {/*  </DialogTrigger>*/}
+                  {/*  <DialogContent className="sm:max-w-[425px]">*/}
+                  {/*    <DialogHeader>*/}
+                  {/*      <DialogTitle>Select Logo</DialogTitle>*/}
+                  {/*      <DialogDescription>*/}
+                  {/*        Drag and Drop or click select to select your organization logo.*/}
+                  {/*      </DialogDescription>*/}
+                  {/*    </DialogHeader>*/}
+                  {/*    <Card>*/}
+                  {/*      <div onDrop={handleDropEvent} onDragOver={allowDrop} className="w-full h-32 flex justify-center items-center ">*/}
+                  {/*        <CloudUpload className="w-16 h-16 opacity-60" />*/}
+                  {/*      </div>*/}
+                  {/*    </Card>*/}
+                  {/*    <DialogFooter>*/}
+                  {/*      <Input type="file" onChange={handleOnChangeEvent} />*/}
+                  {/*    </DialogFooter>*/}
+                  {/*  </DialogContent>*/}
+                  {/*</Dialog>*/}
                 </div>
               </div>
 
@@ -227,10 +238,9 @@ export function NewOrganizationForm() {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogTitle>Confirm Dialog</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete your
-                      account and remove your data from our servers.
+                      Click create to confirm and create your own organization or cancel to exit.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
