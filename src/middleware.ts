@@ -27,8 +27,8 @@ export default authMiddleware({
             if (auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH) {
                 console.log("auth.sessionClaims != null && req.nextUrl.pathname != CREATE_ORGANIZATION_PATH")
                 const memberships = auth.sessionClaims.memberships;
-
-                if ( memberships != null && memberships != undefined &&Object.keys(memberships).length == 0) {
+                console.log("MEMBERSHIP:", memberships)
+                if ( memberships != null || memberships != undefined || Object.keys(memberships).length == 0) {
                     console.log("Object.keys(memberships).length == 0")
                     return NextResponse.redirect(new URL(CREATE_ORGANIZATION_PATH, req.url))
                 }
