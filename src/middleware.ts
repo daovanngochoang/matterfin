@@ -25,19 +25,18 @@ export default authMiddleware({
             console.log("auth.userId && !auth.isPublicRoute")
 
             if (auth.sessionClaims != null) {
-                if (req.nextUrl.pathname !== CREATE_ORGANIZATION_PATH) {
-                    console.log("req.nextUrl.pathname != CREATE_ORGANIZATION_PATH")
+                const memberships = auth.sessionClaims.memberships;
+                console.log("MEMBERSHIP:", memberships)
 
-                    const memberships = auth.sessionClaims.memberships;
-                    console.log("MEMBERSHIP:", memberships)
-                    if (memberships == null || memberships == undefined || Object.keys(memberships).length == 0) {
-                        console.log("Object.keys(memberships).length == 0")
-                        return NextResponse.redirect(new URL(CREATE_ORGANIZATION_PATH, req.url))
-                    }
+                if ((memberships == undefined || Object.keys(memberships).length == 0) && req.nextUrl.pathname !== CREATE_ORGANIZATION_PATH) {
+                    console.log("req.nextUrl.pathname != CREATE_ORGANIZATION_PATH")
+                    console.log("Object.keys(memberships).length == 0")
+                    return NextResponse.redirect(new URL(CREATE_ORGANIZATION_PATH, req.url))
                 } else if (
                     auth.userId &&
                     !auth.orgId &&
                     req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH
+                    && memberships != undefined
                 ) {
                     console.log(" req.nextUrl.pathname !== SELECT_ORGANIZATION_PATH")
                     const orgSelection = new URL(SELECT_ORGANIZATION_PATH, req.url);
