@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/components/ui/use-toast"
 import { DASHBOARD_PATH } from "@/constants/routingPath";
-import { useRouter } from "next/navigation"
+import {redirect, useRouter} from "next/navigation"
 
 const FormSchema = z.object({
   orgName: z.string(
@@ -93,9 +93,7 @@ export function NewOrganizationForm() {
 
         setAlertOpen(false)
 
-        if (typeof window !== 'undefined') {
-          router.push(DASHBOARD_PATH)
-        }
+        router.push(DASHBOARD_PATH)
       } else {
         toast({
           title: "Unexpected error",
