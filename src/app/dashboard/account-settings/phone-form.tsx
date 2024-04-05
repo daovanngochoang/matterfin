@@ -34,7 +34,7 @@ export function PhoneForm({ onSubmit }: PhoneFormProps) {
   })
 
   return (
-    <div>
+    <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -48,7 +48,7 @@ export function PhoneForm({ onSubmit }: PhoneFormProps) {
                     <Input placeholder="+84897468382" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Enter your phone number here and click submit when you're done.
+                    Enter your phone number here and click submit when you are done.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -58,7 +58,7 @@ export function PhoneForm({ onSubmit }: PhoneFormProps) {
           <Button type="submit">Submit</Button>
         </form>
       </Form>
-    </div>
+    </>
   );
 
 }
@@ -70,7 +70,7 @@ export function PhoneForm({ onSubmit }: PhoneFormProps) {
 export function PhoneFormPopup({ children }: { children: ReactNode }) {
 
   return (
-    <div>
+    <>
       <Popover>
         <PopoverTrigger asChild>
           {children}
@@ -79,7 +79,8 @@ export function PhoneFormPopup({ children }: { children: ReactNode }) {
           <div className="space-y-2">
             <h4 className="font-medium leading-none">Add phone number</h4>
             <p className="text-sm text-muted-foreground">
-              A text message containing a verification code will be sent to this phone number. Message and data rates may apply.            </p>
+              A text message containing a verification code will be sent to this phone number. Message and data rates may apply.
+            </p>
           </div>
           <PhoneForm onSubmit={function(data: { phone: string; }): void {
             console.log(data) 
@@ -87,7 +88,7 @@ export function PhoneFormPopup({ children }: { children: ReactNode }) {
         </PopoverContent>
       </Popover>
 
-    </div>
+    </>
 
   );
 
