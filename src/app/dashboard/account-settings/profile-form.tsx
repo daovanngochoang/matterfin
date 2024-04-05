@@ -86,28 +86,40 @@ export default function ProfileForm({
 
 
 
-  function profilePhoto( user: UserResource): React.ReactNode {
+  function profilePhoto(user: UserResource): React.ReactNode {
     if (profileImage == undefined) {
       if (user.hasImage) {
         return (
           <>
-            {/* <Avatar> */}
             <AvatarImage src={user.imageUrl} alt="profile image" />
             <AvatarFallback>{`${user.firstName}${user.lastName}`}</AvatarFallback>
-            {/* </Avatar> */}
           </>
         )
       }
       return <UserIcon className="w-16 h-16" />
     } else {
       return (<>
-        {/* <Avatar> */}
         <AvatarImage src={window.URL.createObjectURL(profileImage)} alt="profile image" />
         <AvatarFallback>{`${user.firstName}${user.lastName}`}</AvatarFallback>
-        {/* </Avatar> */}
       </>)
     }
   }
+
+  function handleDropEvent(event: React.DragEvent<HTMLDivElement>) {
+    if (event.dataTransfer.files) {
+      setProfileImage(event.dataTransfer.files[0]);
+      setOpenFileSelector(false)
+    }
+  }
+
+  function handleSelectFileEvent(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.files) {
+      const selectedFile = event.target.files[0];
+      setProfileImage(selectedFile);
+      setOpenFileSelector(false)
+    }
+  }
+
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
@@ -126,7 +138,7 @@ export default function ProfileForm({
           <Separator />
         </div>
         <Form {...form}>
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
             <div>
               <Avatar className="w-16 h-16 ">
                 {profilePhoto(user!)}
@@ -138,8 +150,8 @@ export default function ProfileForm({
                 <DragDropFileSelector
                   open={openFileSelector}
                   onOpenChange={setOpenFileSelector}
-                  handleDrop={(e) => { }}
-                  handleSelect={(e) => { }}
+                  handleDrop={handleDropEvent}
+                  handleSelect={handleSelectFileEvent}
                 >
                   <Button variant="outline">
                     Upload
@@ -147,7 +159,7 @@ export default function ProfileForm({
                 </DragDropFileSelector>
                 <Button variant="ghost" className="text-destructive hover:text-destructive">Remove</Button>
               </div>
-             <p className="text-muted-foreground text-xs ">Recommended size 1:1, up to 10MB.</p>
+              <p className="text-muted-foreground text-xs ">Recommended size 1:1, up to 10MB.</p>
             </div>
           </div>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
