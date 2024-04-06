@@ -13,7 +13,7 @@ const PaymentMethods = () => {
 
     return (
         <>
-            <div className='grid grid-cols-5 '>
+            <div className='grid grid-cols-5  mb-16'>
                 <div className='col-span-3 min-w-[800px] space-y-6'>
                     <div className='flex items-center justify-between '>
                         {/* this is the greeting section*/}
@@ -71,6 +71,28 @@ const PaymentMethods = () => {
                                 {
                                     id: 1,
                                     method_name: "Card Payment",
+                                    org_id: "",
+                                    is_active: false,
+                                    information: "",
+                                }
+                            }
+                            activate={(method) => {console.log(method)}}
+                            edit={(method) => {console.log(method)}}
+                        />
+
+                    </div>
+                    <div className={"space-y-6"}>
+                        <div>
+                            <h3 className="text-xl font-bold">
+                                Pay later
+                            </h3>
+                        </div>
+                        <PaymentMethodCard
+                            disabled={true}
+                            method={
+                                {
+                                    id: 1,
+                                    method_name: "Credit Terms",
                                     org_id: "",
                                     is_active: false,
                                     information: "",

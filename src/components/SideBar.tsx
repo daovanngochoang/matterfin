@@ -2,9 +2,7 @@
 import React from 'react';
 import Link from "next/link";
 import SideBarData from "@/constants/sideBarData";
-import { usePathname } from "next/navigation";
-import { Bell, Package2 } from 'lucide-react';
-import { Button } from './ui/button';
+import {usePathname} from "next/navigation";
 
 
 function SideBar() {
@@ -13,7 +11,7 @@ function SideBar() {
 
   return (
 
-    <div className="border-r min-h-[calc(100vh-56px)] pl-8 pr-4 min-w-64 w-72 pt-5 flex flex-col gap-4 h-full ">
+    <div className="border-r min-h-[calc(100vh-56px)] pl-8 pr-4 min-w-64 w-72 pt-5 flex flex-col gap-4 h-auto">
       {/*<div className="mx-auto grid w-full max-w-6xl gap-2">*/}
       {/*  <h1 className="text-3xl font-semibold">My Dashboard</h1>*/}
       {/*</div>*/}
