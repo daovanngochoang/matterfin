@@ -1,127 +1,228 @@
 "use client"
 
-import {Button} from '@/components/ui/button';
-import React, {useState} from 'react';
+import { Button } from '@/components/ui/button';
+import React, { memo, useState } from 'react';
 
 
-import {zodResolver} from "@hookform/resolvers/zod"
-import {useForm} from "react-hook-form"
-import {z} from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
-import {Badge} from "@/components/ui/badge";
-import {Textarea} from "@/components/ui/textarea";
-import {PaymentMethod} from "@/lib/model/paymentMethod";
-import {toast} from "@/components/ui/use-toast";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { PaymentMethod } from "@/lib/model/paymentMethod";
+import { updatePaymentMethod } from '@/lib/actions/paymentMethodAction';
+import { useToast } from '@/components/ui/use-toast';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Loader2 } from 'lucide-react';
 
 const FormSchema = z.object({
-    information: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    })
+  information: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  })
 })
 
-type ActivateMethod = (method: PaymentMethod) => void
-
-type EditMethod = (method: PaymentMethod) => void
-
 export type PaymentMethodCardProps = {
-    method: PaymentMethod
-    disabled: boolean
-    description?: string
-    placeholder?: string
-    activate: ActivateMethod
-    edit: EditMethod
+  method: PaymentMethod
+  description?: string
+  placeholder?: string
 }
 export default function PaymentMethodCard(
-    {
-        method,
-        disabled,
-        description,
-        placeholder,
-        activate,
-        edit,
-    }: PaymentMethodCardProps) {
+  {
+    method,
+    description,
+    placeholder,
+  }: PaymentMethodCardProps) {
 
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
-        defaultValues: {
-            information: method.information
-        },
-    })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-            ),
-        })
+  const [editing, setEditing] = useState<boolean>()
+  const [openConfirmAlert, setOpenConfirmAlert] = useState(false)
+  const { toast } = useToast()
+  const [isPending, setIsPending] = useState(false)
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      information: method.information ?? ""
+    },
+  })
+
+  async function onSubmit(formData: z.infer<typeof FormSchema>) {
+
+    try {
+      setIsPending(true)
+      let methodData: PaymentMethod = {
+        id: method.id,
+        method_name: method.method_name,
+        org_id: method.org_id,
+        is_active: method.is_active,
+        information: formData.information ?? "",
+      }
+
+      let { error, data } = await updatePaymentMethod(method.id!, methodData)
+      setIsPending(false)
+      if (error === undefined) {
+        toast(
+          {
+            title: "Update Payment Method",
+            description: "Payment method is updated successfully!"
+          }
+        )
+      } else {
+        toast(
+          {
+            variant: "destructive",
+            title: "Update Payment Method",
+            description: error
+          }
+        )
+      }
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Update Payment Method",
+        description: (e as Error).message
+      })
+    }
+    setEditing(false)
+    setOpenConfirmAlert(true)
+  }
+
+  const statusStyle = {
+    active: "bg-green-100 text-green-500 hover:bg-secondary",
+    inActive: "bg-red-100 text-red-500 hover:bg-secondary"
+  }
+
+
+  function edit(method: PaymentMethod): void {
+    setEditing(!editing)
+  }
+
+  async function activate(method: PaymentMethod): Promise<void> {
+    try {
+      method.is_active = !method.is_active
+      let { error, data } = await updatePaymentMethod(method.id!, method)
+      if (error === undefined) {
+        toast(
+          {
+            title: "Payment Method",
+            description: `Payment method ${method.method_name} is updated!`
+          }
+        )
+      }
+      else {
+        toast(
+          {
+            variant: "destructive",
+            title: "Payment Method",
+            description: error
+          }
+        )
+      }
+    } catch (e) {
+
+      toast(
+        {
+          variant: "destructive",
+          title: "Payment Method",
+          description: (e as Error).message
+        }
+      )
     }
 
+  }
 
-    const statusStyle = {
-        active: "bg-green-200 text-green-500 hover:bg-secondary",
-        inActive: "bg-red-200 text-red-500 hover:bg-secondary"
-    }
-
-    return (
-        <>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
-                    <FormField
-                        control={form.control}
-                        name="information"
-                        render={({field}) => (
-                            <FormItem>
-                                <FormLabel className="flex justify-between items-center ">
-                                    <div>{method.method_name}</div>
-                                    <Badge className={method.is_active ? statusStyle.active : statusStyle.inActive}
-                                           variant="outline"
-                                    >
-                                        {method.is_active ? "Active": "Inactive"}
-                                    </Badge>
-                                </FormLabel>
-                                <FormControl>
-                                    <Textarea
-                                        disabled
-                                        className="min-h-[200px]"
-                                        placeholder={placeholder == undefined ? "Enter payment method information here" : placeholder} {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                    {description}
-                                </FormDescription>
-                                <FormMessage/>
-                            </FormItem>
-                        )}
-                    />
-
-                    {
-                        // if not disable => allow change
-                        !disabled ?
-                            <Button type="submit">Save Changes</Button>
-                            : <></>
-                    }
-                </form>
-            </Form>
-
-            <div className="flex gap-2">
-                <Button
-                    onClick={() => edit(method)}
-                    className="bg-secondary text-primary hover:text-secondary"
-                >
-                    Edit
+  return (
+    <>
+      <AlertDialog open={openConfirmAlert} onOpenChange={setOpenConfirmAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Update</AlertDialogTitle>
+            <AlertDialogDescription>
+              Click continue to confirm your changes
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            {
+              !isPending ?
+                <AlertDialogAction onClick={form.handleSubmit(onSubmit)}>Continue</AlertDialogAction> :
+                <Button disabled>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
                 </Button>
+            }
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-                {/*<Button  type="submit">Edit</Button>*/}
-                <Button onClick={() => activate(method)}
-                        className={method.is_active ? statusStyle.inActive : statusStyle.active}>
-                    {method.is_active? "Disable": "Activate"}
-                </Button>
-            </div>
-        </>
-    )
+
+      <Form {...form}>
+        <form className=" w-full space-y-6">
+          <FormField
+            control={form.control}
+            name="information"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex justify-between items-center ">
+                  <div>{method.method_name}</div>
+                  <Badge className={method.is_active ? statusStyle.active : statusStyle.inActive}
+                    variant="outline"
+                  >
+                    {method.is_active ? "Active" : "Inactive"}
+                  </Badge>
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    readOnly={!editing}
+                    className="min-h-[200px]"
+                    placeholder={placeholder == undefined ? "Enter payment method information here" : placeholder} {...field} />
+                </FormControl>
+                <FormDescription>
+                  {description}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+
+        </form>
+      </Form>
+      {
+        // if not disable => allow change
+        editing ?
+          <Button onClick={() => setOpenConfirmAlert(true)}>Save Changes</Button>
+          : <></>
+      }
+      <div className="flex gap-2">
+
+        {
+          !editing ?
+            <Button
+              variant={"outline"}
+              onClick={() => edit(method)}
+            >
+              Edit
+            </Button>
+            : <Button
+              onClick={() => setEditing(!editing)}
+              className="bg-secondary text-primary hover:text-secondary"
+            >
+              Done
+            </Button>
+
+        }
+
+        {/*<Button  type="submit">Edit</Button>*/}
+        <Button onClick={() => activate(method)}
+          className={method.is_active ? statusStyle.inActive : statusStyle.active}>
+          {method.is_active ? "Disable" : "Activate"}
+        </Button>
+      </div>
+    </>
+  )
 }
 
 
