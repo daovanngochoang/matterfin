@@ -86,7 +86,7 @@ export default function PaymentMethodCard(
       })
     }
     setEditing(false)
-    setOpenConfirmAlert(true)
+    setOpenConfirmAlert(false)
   }
 
   const statusStyle = {
