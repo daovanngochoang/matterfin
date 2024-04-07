@@ -21,7 +21,6 @@ export class ContactRepository extends SupabaseRepository<number, Contact> imple
 
     async create(user_id: string, data: Contact, org_id?: string | undefined): Promise<RepoResult<boolean>> {
         try {
-            data.user_id = user_id;
             data.org_id = org_id
             const {error} = await this.dbClient.from(this.table).insert(data);
             if (error !== null) {

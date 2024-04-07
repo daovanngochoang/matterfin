@@ -104,7 +104,7 @@ const ContactForm = (props: CreateContactFormButtonProps) => {
             }
         )
         console.log(error)
-        if (error !== undefined) {
+        if (error === undefined) {
             toast(
                 {
                     variant: "default",
