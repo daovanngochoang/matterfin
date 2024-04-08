@@ -15,7 +15,7 @@ export default async function GeneralCheckoutPage({ params }: { params: { orgId:
   return <>
     <div className="flex justify-center  w-full h-screen mt-20">
 
-      <div className="w-[600px] space-y-8">
+      <div className="w-[750px] space-y-8">
         <OrgInformation />
 
         <div className="flex flex-col gap-8">

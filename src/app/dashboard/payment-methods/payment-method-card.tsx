@@ -101,8 +101,7 @@ export default function PaymentMethodCard(
 
   async function activate(method: PaymentMethod): Promise<void> {
     try {
-      method.is_active = !method.is_active
-      let { error, data } = await updatePaymentMethod(method.id!, method)
+      let { error, data } = await updatePaymentMethod(method.id!, {is_active: !method.is_active})
       if (error === undefined) {
         toast(
           {
