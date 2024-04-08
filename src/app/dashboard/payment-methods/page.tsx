@@ -1,41 +1,28 @@
 
 import { Button } from '@/components/ui/button';
-import { useUser } from '@clerk/nextjs';
+import { auth, useOrganization, useUser } from '@clerk/nextjs';
 import React from 'react';
 import { Separator } from "@/components/ui/separator";
 import PaymentMethodCard from "@/app/dashboard/payment-methods/payment-method-card";
 import { getPaymentMethods } from '@/lib/actions/paymentMethodAction';
 import { currentUser } from '@clerk/nextjs/server';
 import { PaymentSchedule } from '@/lib/model/enum';
+import { GENERAL_CHECKOUT_PATH } from '@/constants/routingPath';
+import { redirect, useRouter } from "next/navigation"
+import { PaymentMethodBanner } from './payment-method-banner';
 
 
 const PaymentMethods = async () => {
   const user = await currentUser();
-
+  const { orgId } = auth()
   const { data } = await getPaymentMethods()
-  const paynow = data?.filter((d) => d.schedule! === PaymentSchedule.NOW).sort((a, b)=> a.id! - b.id!)
-  const paylater = data?.filter((d) => d.schedule === PaymentSchedule.LATER).sort((a, b)=> a.id! - b.id!)
+  const paynow = data?.filter((d) => d.schedule! === PaymentSchedule.NOW).sort((a, b) => a.id! - b.id!)
+  const paylater = data?.filter((d) => d.schedule === PaymentSchedule.LATER).sort((a, b) => a.id! - b.id!)
   return (
     <>
       <div className='grid grid-cols-5  mb-16'>
         <div className='col-span-3 min-w-[800px] space-y-6'>
-
-          <div className='flex items-center justify-between '>
-            {/* this is the greeting section*/}
-            <div className='flex flex-col gap-2 '>
-              <div className='text-4xl font-bold font-sans'>
-                {`Hi ${user?.firstName} ${user?.lastName}!`}
-              </div>
-              <div className='font-normal'>
-                Here are your setting for payment method
-              </div>
-            </div>
-            <Button>
-              General Checkout Page
-            </Button>
-          </div>
-          <Separator className="mt-3" />
-
+          <PaymentMethodBanner />
           <div className='space-y-14 flex flex-col'>
             <div className="space-y-6 mt-10">
               <div>

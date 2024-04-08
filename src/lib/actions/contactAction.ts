@@ -26,7 +26,6 @@ export async function createContact(data: Contact): Promise<ActionResult<boolean
   const { userId, orgId } = auth()
   try {
     let result = await dataRepo.contactRepo.create(userId!, data, orgId!)
-    console.log(result)
     revalidatePath(CONTACT_BOOK)
     return { data: result.data }
   } catch (e) {

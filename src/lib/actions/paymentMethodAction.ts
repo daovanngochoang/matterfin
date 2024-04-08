@@ -59,11 +59,38 @@ export async function getPaymentMethods(): Promise<ActionResult<PaymentMethod[]>
       error: error
     }
   } catch (e) {
-    console.log(e)
     return {
       error: (e as Error).message
     }
   }
+}
+
+
+export async function getActivePaymentMethod({ isActive , orgId }: { isActive: boolean, orgId?: string | undefined }): Promise<ActionResult<PaymentMethod[]>> {
+  try {
+    
+    if (orgId === undefined) {
+      orgId = auth().orgId!
+    }
+
+    let result = await dataRepo.paymentRepo.getAll(orgId!)
+   
+    if (result.error === undefined) {
+      let data = result.data?.filter((p) => p.is_active == isActive)
+      return {
+        data: data
+      }
+    }
+    return {
+      error: result.error
+    }
+  } catch (e) {
+    return {
+      error: (e as Error).message
+    }
+  }
+
+
 }
 
 export async function getPaymentMethodByID(pid: number): Promise<ActionResult<PaymentMethod>> {
@@ -81,8 +108,7 @@ export async function updatePaymentMethod(pid: number, method: PaymentMethod) {
 
     method.updated_at = new Date(Date.now())
     let { error, data } = await dataRepo.paymentRepo.update(pid, userId!, method, orgId!)
-   
-    console.log(data)
+
     if (error === undefined) {
       return {
         data: data

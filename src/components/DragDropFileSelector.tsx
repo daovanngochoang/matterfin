@@ -21,7 +21,7 @@ type DragFileSelectorProps = {
     onOpenChange: React.Dispatch<React.SetStateAction<boolean>>
     handleDrop: HandleDropEvent
     handleSelect: HandleOnSelectEvent
-    children: ReactNode
+    children?: ReactNode
 }
 
 export default function DragDropFileSelector(

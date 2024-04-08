@@ -103,7 +103,6 @@ const ContactForm = (props: CreateContactFormButtonProps) => {
                 phone: values.phone
             }
         )
-        console.log(error)
         if (error === undefined) {
             toast(
                 {
