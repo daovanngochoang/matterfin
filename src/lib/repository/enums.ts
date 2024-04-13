@@ -7,7 +7,7 @@ export enum Action {
 
 export enum TableName {
   contact = "contact",
-  accountReceivable = "account_receivable",
+  paymentRequest = "payment_request",
   creditTerm = "credit_term",
   attachment = "attachment",
   paymentMethod = "payment_method",

@@ -1,8 +1,8 @@
 type Attachment = {
-  id: number;
+  id?: number | undefined;
   url: string;
   name: string;
-  ar_id: number;
+  pr_id: number;
   created_at?: Date | null;
   updated_at?: Date | null;
 };

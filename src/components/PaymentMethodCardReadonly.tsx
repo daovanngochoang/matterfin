@@ -1,21 +1,16 @@
 "use client"
 
-import { Button } from '@/components/ui/button';
 import React, { memo, useState } from 'react';
 
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
-import { Badge } from "@/components/ui/badge";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { PaymentMethod } from "@/lib/model/paymentMethod";
-import { updatePaymentMethod } from '@/lib/actions/paymentMethodAction';
-import { useToast } from '@/components/ui/use-toast';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Loader2 } from 'lucide-react';
+
 
 const FormSchema = z.object({
   information: z.string().min(2, {

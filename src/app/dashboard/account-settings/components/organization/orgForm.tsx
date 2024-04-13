@@ -104,6 +104,7 @@ export function OrganizationFormProfile() {
         )
       }
       setOpenConfirmAlert(false)
+      setIsEditing(false)
 
     } catch (e) {
       let message = "Unexpected Error"

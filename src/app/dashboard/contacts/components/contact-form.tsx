@@ -72,7 +72,8 @@ const ContactForm = (props: CreateContactFormButtonProps) => {
                 phone: values.phone
             }
         )
-        if (data !== false) {
+          
+        if (error === undefined) {
             toast(
                 {
                     variant: "default",

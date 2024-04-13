@@ -2,7 +2,6 @@
 
 -- this enum holds the status of an AR 
 CREATE TYPE payment_status AS ENUM ('ACTIVE', 'OVERDUE', 'PAID');
-CREATE TYPE payment_request_type AS ENUM ('PAYMENT_REQUEST', 'GENERAL');
 CREATE TYPE payment_schedule AS ENUM ('NOW', 'LATER');
 
 -- this table stores contacts belong to user or organization 
@@ -32,7 +31,6 @@ CREATE TABLE IF NOT EXISTS payment_request (
 	is_acknowledged     BOOLEAN DEFAULT FALSE,
 	status              payment_status DEFAULT 'ACTIVE',
 	amount              money NOT NULL,
-	pr_type             payment_request_type,
 	created_at          TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at          TIMESTAMP
 );

@@ -35,7 +35,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
                 <ClerkLoaded>
                   <SyncOrganization memberships={sessionClaims?.memberships!} />
                   <HeaderBar />
-                  <div className="w-full">
+                  <div className="w-full h-auto">
                     <div>{children}</div>
                   </div>
                 </ClerkLoaded>
