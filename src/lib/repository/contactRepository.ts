@@ -19,15 +19,15 @@ export class ContactRepository extends SupabaseRepository<number, Contact> imple
     throw new Error("Method not implemented.");
   }
 
-  async create(user_id: string, data: Contact, org_id?: string | undefined): Promise<RepoResult<boolean>> {
+  async create(user_id: string, contact: Contact, org_id?: string | undefined): Promise<RepoResult<Contact>> {
     try {
-      data.org_id = org_id
-      const { error } = await this.dbClient.from(this.table).insert(data);
+      contact.org_id = org_id
+      const { error, data } = await this.dbClient.from(this.table).insert(contact).select();
       if (error !== null) {
         return { error: error.message }
       }
-      await this.audit(user_id, Action.CREATE, org_id, data)
-      return { data: true };
+      await this.audit(user_id, Action.CREATE, org_id, contact)
+      return { data: data[0] };
     } catch (error) {
       return { error: (error as Error).message };
     }
@@ -84,8 +84,7 @@ export class ContactRepository extends SupabaseRepository<number, Contact> imple
         data: result,
         count: count != null ? count : undefined,
         status
-      }
-        ;
+      };
     } catch (e) {
       return { error: (e as Error).message };
     }

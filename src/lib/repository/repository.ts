@@ -9,7 +9,7 @@ export interface Repository<I, T> {
 
     audit(user_id: string, action: Action, org_id: string, data?: T): Promise<void>;
 
-    create(user_id: string, data: T, org_id: string): Promise<RepoResult<boolean>>;
+    create(user_id: string, data: T, org_id: string): Promise<RepoResult<T>>;
 
     update(id: I, user_id: string, data: T, org_id: string): Promise<RepoResult<T>>;
 
@@ -43,7 +43,7 @@ export abstract class SupabaseRepository<I, T> implements Repository<I, T> {
         }
     }
 
-    abstract create(user_id: string, data: T, org_id: string | undefined): Promise<RepoResult<boolean>> ;
+    abstract create(user_id: string, data: T, org_id: string | undefined): Promise<RepoResult<T>> ;
 
     abstract update(id: I, user_id: string, data: T, org_id: string | undefined): Promise<RepoResult<T>> ;
 

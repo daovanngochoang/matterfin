@@ -35,18 +35,42 @@ export type PRContactDetailSchemaType = z.infer<typeof PRContactDetailFormSchema
 
 type PRContactDetailFormProps = {
   onChanged: (contact: Contact | undefined, form: UseFormReturn<PRContactDetailSchemaType>) => void,
-  contacts: Contact[]
+  contacts: Contact[],
+  defaultData: Contact
 }
 
 
-export function PRContactDetailForm({ contacts, onChanged }: PRContactDetailFormProps) {
+export function PRContactDetailForm({ contacts, onChanged, defaultData }: PRContactDetailFormProps) {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("")
   const [selectedContact, setSelectedContact] = useState<Contact>()
   const [selected, setSelected] = useState(false)
 
+  let defaultValues = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    company: ""
+  }
+
+  if (defaultData !== undefined && defaultData.id === undefined) {
+    defaultValues.lastName = defaultData.lastname
+    defaultValues.firstName = defaultData.firstname
+    defaultValues.email = defaultData.email
+    defaultValues.phone = defaultData.phone
+    defaultValues.company = defaultData.company_name
+  } else {
+    if (defaultData !== undefined && selectedContact === undefined){
+      setValue(defaultData.name!)
+      setSelectedContact(defaultData)
+      setSelected(true)
+    }
+  }
+
   const form = useForm<PRContactDetailSchemaType>({
     resolver: zodResolver(PRContactDetailFormSchema),
+    mode: "onChange",
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -56,6 +80,7 @@ export function PRContactDetailForm({ contacts, onChanged }: PRContactDetailForm
     },
   })
 
+  console.log(contacts)
 
   return (
     <div className="space-y-4">
@@ -116,6 +141,7 @@ export function PRContactDetailForm({ contacts, onChanged }: PRContactDetailForm
             onClick={() => {
               setSelected(false)
               setValue("")
+              form.reset()
             }}
           >Set values</Button>
           : <Form {...form} >
@@ -160,7 +186,7 @@ export function PRContactDetailForm({ contacts, onChanged }: PRContactDetailForm
                 name="company"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Company</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter company here" {...field} />
                     </FormControl>
@@ -173,7 +199,7 @@ export function PRContactDetailForm({ contacts, onChanged }: PRContactDetailForm
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter email here" {...field} />
                     </FormControl>
@@ -186,7 +212,7 @@ export function PRContactDetailForm({ contacts, onChanged }: PRContactDetailForm
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Phone</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter phone here" {...field} />
                     </FormControl>

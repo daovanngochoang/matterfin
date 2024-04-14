@@ -22,7 +22,7 @@ export async function getAllContacts(): Promise<ActionResult<Contact[]>> {
 }
 
 
-export async function createContact(data: Contact): Promise<ActionResult<boolean>> {
+export async function createContact(data: Contact): Promise<ActionResult<Contact>> {
   const { userId, orgId } = auth()
   try {
     let result = await dataRepo.contactRepo.create(userId!, data, orgId!)

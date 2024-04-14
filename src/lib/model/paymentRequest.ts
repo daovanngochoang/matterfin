@@ -3,12 +3,12 @@ import { PaymentStatus } from "./enum";
 import { PaymentMethod } from "./paymentMethod";
 
 export type PaymentRequest = {
-  id: number;
+  id?: number;
   org_id?: string | undefined;
   contact_id?: number | null;
-  payment_method_id?: number | null;
   expired_date?: Date | null;
-  note?: string;
+  display_name?: string | null;
+  notes?: string;
   is_acknowledged: boolean;
   status: PaymentStatus;
   amount: number;

@@ -11,11 +11,12 @@ CREATE TABLE IF NOT EXISTS contact (
   firstname     VARCHAR(100) NOT NULL,
   lastname      VARCHAR(100) NOT NULL,
   company_name  VARCHAR(200) NOT NULL,
-  email         VARCHAR(150) NOT NULL UNIQUE,
-  phone         VARCHAR(20) NOT NULL UNIQUE,
+  email         VARCHAR(150) NOT NULL,
+  phone         VARCHAR(20) NOT NULL,
 	org_id        VARCHAR(500) NOT NULL,
 	created_at    TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at    TIMESTAMP
+	updated_at    TIMESTAMP,
+	CONSTRAINT unique_contact_info UNIQUE (email, phone, org_id) 
 );
 
 -- account receivable is the payment request that a company 
@@ -24,10 +25,10 @@ CREATE TABLE IF NOT EXISTS contact (
 CREATE TABLE IF NOT EXISTS payment_request (
 	id                  SERIAL PRIMARY KEY,
 	org_id              VARCHAR(500) NOT NULL,
-	contact_id          INTEGER,
-	payment_method_id   INTEGER,
+	contact_id          INTEGER NOT NULL,
 	expired_date        TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
 	notes               TEXT DEFAULT '',
+	display_name        TEXT NOT NULL,
 	is_acknowledged     BOOLEAN DEFAULT FALSE,
 	status              payment_status DEFAULT 'ACTIVE',
 	amount              money NOT NULL,
@@ -62,8 +63,9 @@ CREATE TABLE IF NOT EXISTS payment_method (
 -- this table stores the attachment files 
 CREATE TABLE IF NOT EXISTS attachment (
 	id          SERIAL  PRIMARY KEY,
-	url         TEXT NOT NULL,
-	name        TEXT NOT NULL,
+	public_url  TEXT NOT NULL,
+  object_id   VARCHAR(100) NOT NULL,
+  object_path VARCHAR(1000) NOT NULL,
 	pr_id       INTEGER NOT NULL,
 	created_at  TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at  TIMESTAMP,

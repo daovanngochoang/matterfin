@@ -13,6 +13,4 @@ export const GENERAL_CHECKOUT_PATH: string = "/general-checkout-page"
 
 // PAYMENT REQUEST is Check out page
 export const CREATE_PAYMENT_REQUEST_PATH: string = "/payment-request/new-request";
-export const REVIEW_PAYMENT_REQUEST_PATH: string = "/payment-request/review"
-export const PAYMENT_REQUEST_CREATED_PATH: string = "/payment-request/success"
 export const PAYMENT_REQUEST_PATH: string = "/payment-request";

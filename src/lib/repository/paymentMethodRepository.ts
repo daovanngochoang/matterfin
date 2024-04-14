@@ -13,14 +13,14 @@ export class PaymentMethodRepository extends SupabaseRepository<number, PaymentM
   }
 
 
-  async create(user_id: string, data: PaymentMethod, org_id: string): Promise<RepoResult<boolean>> {
+  async create(user_id: string, method: PaymentMethod, org_id: string): Promise<RepoResult<PaymentMethod>> {
 
     try {
-      data.org_id = org_id
-      let { error } = await this.dbClient.from(this.table).insert(data)
-      await this.audit(user_id, Action.CREATE, org_id, data)
+      method.org_id = org_id
+      let { error, data } = await this.dbClient.from(this.table).insert(method).select()
+      await this.audit(user_id, Action.CREATE, org_id, method)
       if (error === null) {
-        return { data: true }
+        return { data: data![0] }
       }
       return { error: error!.message }
     } catch (e) {

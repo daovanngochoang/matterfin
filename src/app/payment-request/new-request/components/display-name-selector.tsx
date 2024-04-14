@@ -22,9 +22,9 @@ import { CommandList } from "cmdk"
 
 
 
-export default function DisplayNameSelector({ names, onChange }: { names: string[], onChange: (name: string) => void }) {
+export default function DisplayNameSelector({ names, onChange, defaultValue }: { names: string[], onChange: (name: string) => void, defaultValue: string }) {
   const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState(names.length > 0 ? names[0] : "")
+  const [value, setValue] = React.useState(defaultValue ?? "")
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -43,8 +43,8 @@ export default function DisplayNameSelector({ names, onChange }: { names: string
       </PopoverTrigger>
       <PopoverContent className="w-[550px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." className="h-9" />
-          <CommandEmpty>No framework found.</CommandEmpty>
+          <CommandInput placeholder="Search Display name..." className="h-9" />
+          <CommandEmpty>No Name found.</CommandEmpty>
           <CommandGroup>
             <CommandList>
               {names.map((name, idx) => (
