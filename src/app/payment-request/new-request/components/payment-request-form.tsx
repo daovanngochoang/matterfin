@@ -20,11 +20,10 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { createPaymentRequest } from "@/lib/actions/paymentRequestAction";
 import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
 import { PaymentRequestData } from "../state-types";
 import Link from "next/link";
 import { GENERAL_CHECKOUT_PATH } from "@/constants/routingPath";
-import { ProgressStatus } from "@/constants/newRequestStatus";
+import { formatCurrency } from "../utils";
 
 
 type PaymentRequestFormProps = {
@@ -57,14 +56,6 @@ export default function PaymentRequestForm({ contacts, formState, onNext }: Paym
   const [prContactDetailForm, setPrContactDetailForm] = useState<UseFormReturn<PRContactDetailSchemaType>>()
   const [openAlert, setOpenAlert] = useState<boolean>(false)
 
-  const formatCurrency = (value: number) => {
-    // Format the value into currency without fractions
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0, // Set maximum fraction digits to 0
-    }).format(value);
-  };
 
   function handleAmountChange(event: ChangeEvent<HTMLInputElement>): void {
     let input = event.target.value
@@ -191,48 +182,11 @@ export default function PaymentRequestForm({ contacts, formState, onNext }: Paym
     }
     return targetContact
   }
-  async function submit() {
-    try {
-      const formData = new FormData()
-      let targetContact: Contact = getSelectedContact()
 
-      files.forEach((file) => {
-        formData.append("files", file)
-      })
 
-      formData.append("contact", JSON.stringify(targetContact))
-      formData.append("amount", amount)
-      formData.append("displayName", displayName)
-      formData.append("dueDate", dueDate!.toISOString())
-      formData.append("notes", notes)
-
-      const { error, data } = await createPaymentRequest(formData)
-      if (error === undefined) {
-        toast({
-          title: "Success",
-          description: "Your payment request is created!",
-        })
-      } else {
-        toast({
-          title: "Failed",
-          description: error,
-          variant: "destructive"
-        })
-      }
-
-    } catch (e) {
-      toast({
-        title: "Create Payment Request Failed",
-        description: (e as Error).message,
-        variant: "destructive"
-      })
-    }
-
-  }
 
   return (
-    <div className="w-[550px] min-h-[calc(100vh-56px)] mt-5 space-y-12 mb-32">
-
+    <div className="space-y-12 " >
       <div className="flex flex-col gap-12">
         <p className="text-3xl font-bold">Create A Checkout Page</p>
         <Link href={`${GENERAL_CHECKOUT_PATH}/${organization?.id!}`}>
@@ -251,8 +205,6 @@ export default function PaymentRequestForm({ contacts, formState, onNext }: Paym
       </div>
 
       <div className="space-y-12">
-
-
         <AlertDialog open={openAlert} onOpenChange={setOpenAlert}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -423,15 +375,15 @@ export default function PaymentRequestForm({ contacts, formState, onNext }: Paym
           <div className="w-full flex justify-end">
             <Button
               onClick={() => {
-                console.log(validate())
                 if (validate()) {
                   let data: PaymentRequestData = {
-                    amount: amount,
-                    notes: notes,
-                    dueDate: dueDate,
-                    files: files,
-                    selectedContact: getSelectedContact(),
-                    displayName: displayName
+                      amount: amount,
+                      notes: notes,
+                      dueDate: dueDate,
+                      files: files,
+                      selectedContact: getSelectedContact(),
+                      displayName: displayName,
+                      sendMail: false
                   }
                   onNext(data)
                 }

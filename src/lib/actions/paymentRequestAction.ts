@@ -6,8 +6,9 @@ import dataRepo from "../repository/dataRepo"
 import { upLoadPublicFiles } from "./fileUploader"
 import { PaymentStatus } from "../model/enum"
 import { revalidatePath } from "next/cache"
-import { CREATE_PAYMENT_REQUEST_PATH } from "@/constants/routingPath"
-import { number } from "zod"
+import { CREATE_PAYMENT_REQUEST_PATH, PAYMENT_REQUEST_PATH } from "@/constants/routingPath"
+import getURL from "../utils"
+import { sendEmail } from "./mailService"
 
 export const createPaymentRequest = async (formData: FormData) => {
   try {
@@ -75,14 +76,22 @@ export const createPaymentRequest = async (formData: FormData) => {
       }, orgId!)
     }))
 
-    if (atResult.filter(item => {
-      return item.error !== undefined
-    }).length > 0) {
+    if (atResult.filter(item => { return item.error !== undefined }).length > 0) {
       return {
         error: "Something wrong, please try again!"
       }
     }
 
+
+    const notify: boolean = formData.get("notify") == "true"
+    if (notify) {
+      sendEmail({
+        email: targetContact.email,
+        name: displayName,
+        message: getURL(`${PAYMENT_REQUEST_PATH}/${prResult.data!.id}`),
+        subject: "New payment request from " + displayName
+      })
+    }
     revalidatePath(CREATE_PAYMENT_REQUEST_PATH)
     if (prResult.error !== undefined) {
       return {

@@ -1,4 +1,5 @@
 import Contact from "@/lib/model/contact"
+import { PaymentRequest } from "@/lib/model/paymentRequest"
 
 
 export type PaymentRequestData = {
@@ -7,7 +8,9 @@ export type PaymentRequestData = {
   dueDate: Date | undefined,
   files: File[],
   selectedContact: Contact | undefined,
-  displayName: string
+  displayName: string,
+  result?: PaymentRequest | undefined,
+  sendMail: boolean
 }
 
 

@@ -2,21 +2,19 @@ import { getActivePaymentMethod } from "@/lib/actions/paymentMethodAction";
 import { PaymentSchedule } from "@/lib/model/enum";
 import { Separator } from "./ui/separator";
 import PaymentMethodCardReadonly from "./PaymentMethodCardReadonly";
-import { Button } from "./ui/button";
+import { PaymentMethod } from "@/lib/model/paymentMethod";
 
 
 
 
-export default async function AvailablePaymentMethods({ orgId }: { orgId: string }) {
+export default function AvailablePaymentMethods({ data }: { data: PaymentMethod[] }) {
 
-  let data = await getActivePaymentMethod({ isActive: true, orgId: orgId });
-  let paynow = data.data?.filter((pm) => pm.schedule === PaymentSchedule.NOW).sort((a, b) => a.id! - b.id!)
-  let payLater = data.data?.filter((pm) => pm.schedule === PaymentSchedule.LATER).sort((a, b) => a.id! - b.id!)
-
+  let paynow = data.filter((pm) => pm.schedule === PaymentSchedule.NOW).sort((a, b) => a.id! - b.id!)
+  let payLater = data.filter((pm) => pm.schedule === PaymentSchedule.LATER).sort((a, b) => a.id! - b.id!)
 
   return (
-    <div className="flex flex-col gap-8">
-      <h2 className="text-xl font-bold tracking-tight">Available payment options</h2>
+    <div className="flex flex-col gap-6">
+      <h2 className="text-2xl font-bold tracking-tight">Available payment options</h2>
       <div className="space-y-6">
         <h3 className="flex flex-col gap-2 text-lg font-semibold tracking-tight">
           Direct Payment
@@ -40,8 +38,6 @@ export default async function AvailablePaymentMethods({ orgId }: { orgId: string
           })
         }
       </div>
-
-      <Button className="mb-40 w-32">Request service</Button>
     </div>
   );
 }

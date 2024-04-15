@@ -14,7 +14,7 @@ import {useToast} from "@/components/ui/use-toast";
 
 
 type CreateContactFormButtonProps = {
-    createAction?: CreateAction<Contact, boolean>;
+    createAction?: CreateAction<Contact, Contact>;
     updateAction?: UpdateAction<number, Contact, Contact>
     isUpdateForm: boolean
     contactId?: number

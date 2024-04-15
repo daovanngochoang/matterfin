@@ -41,10 +41,10 @@ export async function getPaymentMethods(): Promise<ActionResult<PaymentMethod[]>
           data: data,
           count: count
         }
-      }
-
-      return {
-        error: error
+      } else {
+        return {
+          error: error
+        }
       }
     }
     revalidatePath(PAYMENT_METHOD)
@@ -66,15 +66,14 @@ export async function getPaymentMethods(): Promise<ActionResult<PaymentMethod[]>
 }
 
 
-export async function getActivePaymentMethod({ isActive , orgId }: { isActive: boolean, orgId?: string | undefined }): Promise<ActionResult<PaymentMethod[]>> {
+export async function getActivePaymentMethod({ isActive, orgId }: { isActive: boolean, orgId?: string | undefined }): Promise<ActionResult<PaymentMethod[]>> {
   try {
-    
+
     if (orgId === undefined) {
       orgId = auth().orgId!
     }
 
     let result = await dataRepo.paymentRepo.getAll(orgId!)
-   
     if (result.error === undefined) {
       let data = result.data?.filter((p) => p.is_active == isActive)
       return {
