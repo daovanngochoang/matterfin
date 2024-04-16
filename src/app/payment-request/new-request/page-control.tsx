@@ -54,6 +54,7 @@ export function PageControl({ contacts }: { contacts: Contact[] }) {
 
       setLoading(true)
       const { error, data } = await createPaymentRequest(formData)
+      console.log(error, data)
       if (error === undefined) {
         setStateData({ ...stateData, result: data })
         setProgress(ProgressStatus.copyLink)

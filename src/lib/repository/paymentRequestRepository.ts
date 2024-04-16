@@ -5,12 +5,17 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { Action, TableName } from "@/lib/repository/enums";
 import { PaymentStatus } from "../model/enum";
 
-export interface IPaymentRequestRepository extends Repository<number, PaymentRequest> { }
+export interface IPaymentRequestRepository extends Repository<number, PaymentRequest> {
+
+  getByID(id: number): Promise<RepoResult<PaymentRequest>>;
+}
 
 export class PaymentRequestRepository extends SupabaseRepository<number, PaymentRequest> implements IPaymentRequestRepository {
   async create(user_id: string, paymentReq: PaymentRequest, org_id: string | undefined): Promise<RepoResult<PaymentRequest>> {
     try {
       paymentReq.org_id = org_id;
+      paymentReq.creator_id = user_id;
+
       const { error, data } = await this.dbClient.from(this.table).insert(paymentReq).select();
 
       if (error !== null) {
@@ -29,7 +34,25 @@ export class PaymentRequestRepository extends SupabaseRepository<number, Payment
       }
     }
   }
-
+  async getByID(id: number): Promise<RepoResult<PaymentRequest>> {
+    try {
+      const { data, error } = await this.dbClient
+        .from(this.table)
+        .select(`*, attachment(*)`).eq("id", id)
+      if (error !== null) {
+        return {
+          error: error.message
+        }
+      }
+      return {
+        data: data[0]
+      }
+    } catch (e) {
+      return {
+        error: (e as Error).message
+      }
+    }
+  }
   async update(id: number, user_id: string, data: PaymentRequest, org_id: string | undefined): Promise<RepoResult<PaymentRequest>> {
     try {
       return {
@@ -68,6 +91,7 @@ export class PaymentRequestRepository extends SupabaseRepository<number, Payment
   constructor(dbClient: SupabaseClient) {
     super(dbClient, TableName.paymentRequest);
   }
+
 
 
 }

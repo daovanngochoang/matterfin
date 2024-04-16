@@ -351,7 +351,7 @@ export default function PaymentRequestForm({ contacts, formState, onNext }: Paym
                     <Card key={idx}>
                       <div className="m-5 flex items-center justify-between">
                         <div className="flex gap-2 items-center">
-                          <File w-8 h-8 />
+                          <File className="h-8 w-8" />
                           <p className="truncate text-sm">
                             {file.name}
                           </p>
