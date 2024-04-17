@@ -82,9 +82,12 @@ export const createPaymentRequest = async (formData: FormData) => {
 
     if (atResult.filter(item => { return item.error !== undefined }).length > 0) {
         console.error(atResult.map(itm => itm.error))
-      return {
-        error: "Something wrong, please try again!"
-      }
+        return {
+          error: atResult.map(itm => itm.error).toString()
+        }
+      // return {
+      //   error: "Something wrong, please try again!"
+      // }
     }
     const notify: boolean = formData.get("notify") == "true"
     if (notify) {
