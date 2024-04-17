@@ -86,14 +86,14 @@ export default async function PaymentCheckoutPage({ params }: { params: { id: nu
           </div>
 
           <AvailablePaymentMethods data={methodsResults.data!} />
-          <Acknowledge paymentMethods={methodsResults.data!} orgId={organization.id} />
+          <Acknowledge paymentMethods={methodsResults.data!} orgId={organization.id} pr={data!} />
         </div>
       )
     }
   } catch (e) {
     return (
       <div>
-        {(e as Error).message}
+         Payment is not found or expired
       </div>
     )
   }

@@ -87,7 +87,6 @@ export function NewOrganizationForm() {
         setAlertOpen(false)
 
         setTimeout(() => {
-          console.log("Router push")
           router.push(DASHBOARD_PATH)
         }, 500)
       } else {

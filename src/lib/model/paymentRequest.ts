@@ -10,28 +10,14 @@ export type PaymentRequest = {
   creator_id?: string | null;
   expired_date?: string | null;
   display_name?: string | null;
+  payment_method_id?: number | null
   notes?: string;
-  is_acknowledged: boolean;
-  status: PaymentStatus;
-  amount: number;
+  is_acknowledged?: boolean;
+  status?: PaymentStatus;
+  amount?: number;
   attachment?: Attachment[]
   created_at?: Date | null;
   updated_at?: Date | null;
 };
-
-
-export type PaymentRequestDto = {
-  id: number;
-  org_id: string;
-  contact: Contact | null;
-  payment_method?: PaymentMethod | null;
-  expired_date?: Date | null;
-  note?: string;
-  is_acknowledged: boolean;
-  status: PaymentStatus;
-  amount: number;
-  created_at?: Date | null;
-  updated_at?: Date | null;
-}
 
 

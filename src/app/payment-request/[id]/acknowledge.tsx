@@ -4,21 +4,61 @@
 import { Button } from "@/components/ui/button";
 import { Command, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
+import { updatePaymentRequest } from "@/lib/actions/paymentRequestAction";
 import { PaymentMethod } from "@/lib/model/paymentMethod";
 import { Lightbulb } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { PaymentRequest } from "@/lib/model/paymentRequest";
 
 
-
-export function Acknowledge({ orgId, paymentMethods }: { orgId: string, paymentMethods: PaymentMethod[] }) {
+export function Acknowledge({ orgId, paymentMethods, pr }: { orgId: string, paymentMethods: PaymentMethod[], pr: PaymentRequest }) {
 
   const [openDialog, setOpenDialog] = useState<boolean>(false)
+  const [isAcknowledged, setIsAcknowledged] = useState<boolean>(pr.is_acknowledged ?? false)
 
-  if (typeof window !== undefined) {
-    window.onbeforeunload = (e) => {
-      e.preventDefault();
-      setOpenDialog(true)
-      return true
+
+  useEffect(
+    () => {
+      if (!isAcknowledged && typeof window !== undefined) {
+        window.onbeforeunload = (e) => {
+          e.preventDefault();
+          setOpenDialog(true)
+          return true
+        }
+      } else {
+        window.onbeforeunload = null;
+      }
+    }, [isAcknowledged]
+  )
+
+
+  const acknowledge = async (methodId: number) => {
+    try {
+      const updatedData = await updatePaymentRequest(pr.id!, orgId, {
+        payment_method_id: methodId,
+        is_acknowledged: true,
+      });
+      if (updatedData.error === undefined) {
+        toast({
+          title: "Acknowledgement",
+          description: "You successfully let them know you acknowledge the payment"
+        })
+        setIsAcknowledged(true)
+        setOpenDialog(false)
+        return
+      }
+      toast({
+        title: "Error",
+        description: updatedData.error,
+        variant: "destructive"
+      })
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: (e as Error).message,
+        variant: "destructive"
+      })
     }
   }
 
@@ -38,9 +78,12 @@ export function Acknowledge({ orgId, paymentMethods }: { orgId: string, paymentM
                 {
                   paymentMethods.map((method, idx) => {
                     return (
-                      <CommandItem key={idx}>
+                      <div
+                        key={idx}
+                        className={`pl-2 text-sm flex items-center gap-3 rounded-lg px-3 py-2 hover:cursor-pointer hover:bg-muted text-muted-foreground ${isAcknowledged && pr.payment_method_id == method.id ? "bg-muted text-primary" : ""} `}
+                        onClick={() => acknowledge(method.id!)}>
                         {method.method_name}
-                      </CommandItem>
+                      </div>
                     )
                   })
                 }

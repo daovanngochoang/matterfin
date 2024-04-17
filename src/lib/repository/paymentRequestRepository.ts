@@ -53,14 +53,19 @@ export class PaymentRequestRepository extends SupabaseRepository<number, Payment
       }
     }
   }
-  async update(id: number, user_id: string, data: PaymentRequest, org_id: string | undefined): Promise<RepoResult<PaymentRequest>> {
+  async update(id: number, user_id: string, prData: PaymentRequest, org_id: string | undefined): Promise<RepoResult<PaymentRequest>> {
     try {
+      let { data, error } = await this.dbClient.from(this.table).update(prData).eq("id", id).select("*")
+      if (error === undefined) return {
+        data: data![0]
+      }
+      await this.audit(user_id, Action.UPDATE, org_id, prData)
       return {
-
+        error: error?.message
       }
     } catch (e) {
       return {
-
+        error: (e as Error).message
       }
     }
   }
