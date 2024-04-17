@@ -81,6 +81,7 @@ export const createPaymentRequest = async (formData: FormData) => {
     }))
 
     if (atResult.filter(item => { return item.error !== undefined }).length > 0) {
+        console.error(atResult.map(itm => itm.error))
       return {
         error: "Something wrong, please try again!"
       }
@@ -98,6 +99,7 @@ export const createPaymentRequest = async (formData: FormData) => {
 
   revalidatePath(CREATE_PAYMENT_REQUEST_PATH)
   if (prResult.error !== undefined) {
+      console.error(prResult.error)
     return {
       error: error
     }
@@ -108,6 +110,7 @@ export const createPaymentRequest = async (formData: FormData) => {
   }
 
   } catch (e) {
+    console.error(e)
     return {
       error: (e as Error).message
     }
