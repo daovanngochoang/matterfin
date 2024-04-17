@@ -46,7 +46,7 @@ export const createPaymentRequest = async (formData: FormData) => {
 
       if (anyError !== undefined && anyError!.length > 0) {
         return {
-          error: anyError.toString()
+          error: anyError.map((item) => item.error?.message).toString()
           // error: "Something wrong, please try again!"
         }
       }
