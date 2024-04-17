@@ -140,9 +140,10 @@ export const getPaymentRequestsByID = async (id: number): Promise<ActionResult<P
 }
 
 export const updatePaymentRequest = async (id: number, orgId: string, payReq: PaymentRequest) => {
-  // try {
+  try {
     const { userId } = auth()
     const { data, error } = await dataRepo.paymentRequestRepo.update(id, userId!, payReq, orgId!)
+    revalidatePath(`${PAYMENT_REQUEST_PATH}/[id]`)
     if (error === undefined) {
       return {
         data: data!
@@ -151,11 +152,11 @@ export const updatePaymentRequest = async (id: number, orgId: string, payReq: Pa
     return {
       error: error
     }
-  // } catch (e) {
-  //   return {
-  //     error: (e as Error).message
-  //   }
-  // }
+  } catch (e) {
+    return {
+      error: (e as Error).message
+    }
+  }
 }
 
 export const deletePaymentRequest = async (id: number,) => {

@@ -44,6 +44,7 @@ export function Acknowledge({ orgId, paymentMethods, pr }: { orgId: string, paym
           title: "Acknowledgement",
           description: "You successfully let them know you acknowledge the payment"
         })
+        pr.payment_method_id = methodId;
         setIsAcknowledged(true)
         setOpenDialog(false)
         return

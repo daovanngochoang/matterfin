@@ -18,8 +18,10 @@ import { Acknowledge } from "./acknowledge";
 export default async function PaymentCheckoutPage({ params }: { params: { id: number } }) {
   try {
     const { data, error } = await getPaymentRequestsByID(params.id)
+    console.log(data)
 
     if (error === undefined) {
+      console.log("HERER")
       const organization = await clerkClient.organizations.getOrganization({ organizationId: data?.org_id! });
       const creator = await clerkClient.users.getUser(data?.creator_id!)
       const methodsResults = await getActivePaymentMethod({ isActive: true, orgId: data?.org_id })
@@ -63,26 +65,27 @@ export default async function PaymentCheckoutPage({ params }: { params: { id: nu
                   <Separator />
                 </div> : <></>
             }
-            {
-              data?.attachment !== null || data.attachment !== undefined ?
-                data?.attachment?.map((att, idx) => {
-                  console.log(att)
-                  return (
-                    <Card key={idx}>
-                      <div className="m-5 flex items-center justify-between">
-                        <div className="flex gap-2 items-center">
-                          <File className="w-8 h-8" />
-                          <p className="truncate text-sm">
-                            {att.object_path.split("/").slice(-1)}
-                          </p>
+            <div className="space-y-2">
+              {
+                data?.attachment !== null || data.attachment !== undefined ?
+                  data?.attachment?.map((att, idx) => {
+                    return (
+                      <Card key={idx}>
+                        <div className="m-5 flex items-center justify-between">
+                          <div className="flex gap-2 items-center w-3/4">
+                            <File className="w-8 h-8" />
+                            <p className="truncate text-sm w-[80%]">
+                              {att.object_path.split("/").slice(-1)}
+                            </p>
+                          </div>
+                          <Link className="text-primary" href={att.public_url} download>Download</Link>
                         </div>
-                        <Link href={att.public_url} download={true}>Download</Link>
-                      </div>
-                    </Card>
-                  )
-                })
-                : <div></div>
-            }
+                      </Card>
+                    )
+                  })
+                  : <div></div>
+              }
+            </div>
           </div>
 
           <AvailablePaymentMethods data={methodsResults.data!} />
