@@ -8,12 +8,14 @@ import { formatCurrency } from "@/utils/currencyFormat"
 import { PaymentMethod } from "@/lib/model/paymentMethod"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Check, CircleCheckBig, Edit, Mail, MoreHorizontal, ScanSearch, Send, Trash2 } from "lucide-react"
+import { Check, CircleCheckBig, Copy, Edit, Mail, MoreHorizontal, RefreshCwOff, ScanSearch, Send, Trash2 } from "lucide-react"
 import { PaymentStatus } from "@/lib/model/enum"
 import { Separator } from "@/components/ui/separator"
 import { useRouter } from "next/navigation"
 import getURL from "@/lib/utils"
 import { PAYMENT_REQUEST_PATH } from "@/constants/routingPath"
+import { toast } from "@/components/ui/use-toast"
+import { Badge } from "@/components/ui/badge"
 
 
 type DashboardTableType = {
@@ -64,6 +66,23 @@ export function DashboardTable({ paymentRequests }: DashboardTableType) {
         )
       }
     }, {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.original.status;
+        if (status === PaymentStatus.PAID) {
+          return (
+            <Badge variant={"outline"} className="bg-green-400">{status}</Badge>
+          )
+        } else if (status === PaymentStatus.ACTIVE) {
+          return <Badge variant={"outline"}>{status}</Badge>
+        }
+        return (
+          <Badge variant={"outline"} className="bg-red-400">{status}</Badge>
+        )
+      }
+    },
+    {
       accessorKey: "progress",
       header: "Progress",
       cell: ({ row }) => {
@@ -103,10 +122,18 @@ export function DashboardTable({ paymentRequests }: DashboardTableType) {
             <DropdownMenuContent className="w-[200px]" align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <Separator />
-              <DropdownMenuItem className="flex gap-2 ">
-                <CircleCheckBig className="h-4 w-4" />
-                Mark as Paid
-              </DropdownMenuItem>
+              {
+                row.original.status == PaymentStatus.PAID ?
+                  <DropdownMenuItem>
+                    <RefreshCwOff className="h-4 w-4" />
+                    Mark as not paid
+                  </DropdownMenuItem>
+                  : <DropdownMenuItem className="flex gap-2 ">
+                    <CircleCheckBig className="h-4 w-4" />
+                    Mark as Paid
+                  </DropdownMenuItem>
+
+              }
               <DropdownMenuItem className="flex gap-2 ">
                 <Mail className="h-4 w-4" />
                 Resend Email
@@ -114,8 +141,15 @@ export function DashboardTable({ paymentRequests }: DashboardTableType) {
               <DropdownMenuItem
                 className="flex gap-2"
                 onClick={() => {
+                  navigator.clipboard.writeText(getURL(`${PAYMENT_REQUEST_PATH}/${row.original.id}`));
+                  toast(
+                    {
+                      title: "Copy URL",
+                      description: "URL is copied to clipboard"
+                    }
+                  )
                 }}>
-                <Edit className="h-4 w-4" />
+                <Copy className="h-4 w-4" />
                 Copy Link
               </DropdownMenuItem>
               <DropdownMenuItem onClick={

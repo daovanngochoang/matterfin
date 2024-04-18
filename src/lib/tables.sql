@@ -83,3 +83,13 @@ CREATE TABLE IF NOT EXISTS attachment (
 );
 
 
+-- add pg cronjob extension 
+-- https://aiven.io/docs/products/postgresql/howto/use-pg-cron-extension
+select
+  cron.schedule (
+    'check-payment-request-expired-job',
+    '0 0-23/1 * * *',
+    $$ update payment_request set status = 'OVERDUE' where expired_date < now() $$
+  );
+
+
