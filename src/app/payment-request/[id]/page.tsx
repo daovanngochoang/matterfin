@@ -1,27 +1,27 @@
 'use server'
 import AvailablePaymentMethods from "@/components/AvailablePaymentMethods";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getActivePaymentMethod } from "@/lib/actions/paymentMethodAction";
 import { getPaymentRequestsByID } from "@/lib/actions/paymentRequestAction";
-import { clerkClient, useOrganization } from "@clerk/nextjs";
-import { CircleX, File, Lightbulb, Siren } from "lucide-react";
+import { clerkClient } from "@clerk/nextjs";
+import { File } from "lucide-react";
 import Link from "next/link";
 import { Acknowledge } from "./acknowledge";
+import { revalidatePath } from "next/cache";
+import { PAYMENT_REQUEST_PATH } from "@/constants/routingPath";
+import { formatCurrency } from "@/utils/currencyFormat";
 
 
 
 
 export default async function PaymentCheckoutPage({ params }: { params: { id: number } }) {
+  revalidatePath(`${PAYMENT_REQUEST_PATH}/[id]`, "page")
   try {
     const { data, error } = await getPaymentRequestsByID(params.id)
-    console.log(data)
 
     if (error === undefined) {
-      console.log("HERER")
       const organization = await clerkClient.organizations.getOrganization({ organizationId: data?.org_id! });
       const creator = await clerkClient.users.getUser(data?.creator_id!)
       const methodsResults = await getActivePaymentMethod({ isActive: true, orgId: data?.org_id })
@@ -50,7 +50,7 @@ export default async function PaymentCheckoutPage({ params }: { params: { id: nu
           <Card>
             <CardHeader>
               <CardTitle className="text-xl">
-                {data?.amount}
+                {formatCurrency(data?.amount!)}
               </CardTitle>
               {(new Date(data?.expired_date!)).toDateString()}
             </CardHeader>
@@ -61,7 +61,7 @@ export default async function PaymentCheckoutPage({ params }: { params: { id: nu
             {
               data?.attachment !== undefined && data?.attachment.length! > 0 ?
                 <div className="space-y-2 mb-6">
-                  <Label>Attachments</Label>
+                  <p className="text-2xl font-bold">Attachments</p>
                   <Separator />
                 </div> : <></>
             }
@@ -78,7 +78,7 @@ export default async function PaymentCheckoutPage({ params }: { params: { id: nu
                               {att.object_path.split("/").slice(-1)}
                             </p>
                           </div>
-                          <Link className="text-primary" href={att.public_url} download>Download</Link>
+                          <Link className="text-primary text-sm font-medium" href={att.public_url} download>Download</Link>
                         </div>
                       </Card>
                     )
@@ -96,7 +96,7 @@ export default async function PaymentCheckoutPage({ params }: { params: { id: nu
   } catch (e) {
     return (
       <div>
-         Payment is not found or expired
+        Payment is not found or expired
       </div>
     )
   }

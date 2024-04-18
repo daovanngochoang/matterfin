@@ -15,9 +15,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CircleCheck, CopyIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { CREATE_PAYMENT_REQUEST_PATH, DASHBOARD_PATH, PAYMENT_REQUEST_PATH } from "@/constants/routingPath";
-import { formatCurrency } from "./utils";
+import { DASHBOARD_PATH, PAYMENT_REQUEST_PATH } from "@/constants/routingPath";
 import getURL from "@/lib/utils";
+import { formatCurrency } from "@/utils/currencyFormat";
 
 
 
@@ -35,6 +35,7 @@ export function PageControl({ contacts }: { contacts: Contact[] }) {
   const [progress, setProgress] = useState<ProgressStatus>(ProgressStatus.create)
   const [loading, setLoading] = useState<boolean>(false)
   const router = useRouter();
+  const [copied, setCopied] = useState(false)
 
   async function submit(prData: PaymentRequestData) {
     try {
@@ -140,7 +141,14 @@ export function PageControl({ contacts }: { contacts: Contact[] }) {
               </Label>
 
               <div className="flex items-center space-x-2">
-                <Button type="submit" size="sm" className="px-3">
+                <Button onClick={() => {
+                  navigator.clipboard.writeText(getURL(`${PAYMENT_REQUEST_PATH}/${stateData.result?.id}`))
+                  setCopied(true)
+                  toast({
+                    title: "URL copied",
+                    description: "URL is copied to clipboard!"
+                  })
+                }} type="submit" size="sm" className="px-3">
                   <span className="sr-only">Copy</span>
                   <CopyIcon className="h-4 w-4" />
                 </Button>

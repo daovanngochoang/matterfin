@@ -117,6 +117,23 @@ export const createPaymentRequest = async (formData: FormData) => {
 
 export const getPaymentRequests = async () => {
 
+  try {
+    const { orgId } = auth()
+    const { data, error } = await dataRepo.paymentRequestRepo.getAll(orgId!)
+    if (error === undefined) {
+      return {
+        data: data
+      }
+    }
+    return {
+      error: error
+    }
+  } catch (e) {
+    return {
+      error: (e as Error).message
+    }
+  }
+
 }
 
 

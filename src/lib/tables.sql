@@ -30,10 +30,17 @@ CREATE TABLE IF NOT EXISTS payment_request (
 	notes               TEXT DEFAULT '',
 	display_name        TEXT NOT NULL,
 	is_acknowledged     BOOLEAN DEFAULT FALSE,
+  payment_method_id   INTEGER,
 	status              payment_status DEFAULT 'ACTIVE',
-	amount              money NOT NULL,
+	amount              numeric NOT NULL,
 	created_at          TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_at          TIMESTAMP
+	updated_at          TIMESTAMP,
+  CONSTRAINT fk_payment_method_on_payment_request 
+    FOREING KEY (payment_method_id) 
+    REFERENCES payment_method(id),
+  CONSTRAINT fk_contact_on_payment_request
+    FOREIGN KEY (contact_id)
+    REFERENCES contact(id)
 );
 
 -- this will record user activity when they modify any data.

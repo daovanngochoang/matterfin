@@ -18,12 +18,10 @@ import { OrganizationMetadata } from "@/lib/model/organizationMetadata";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { createPaymentRequest } from "@/lib/actions/paymentRequestAction";
-import { toast } from "@/components/ui/use-toast";
 import { PaymentRequestData } from "../state-types";
 import Link from "next/link";
 import { GENERAL_CHECKOUT_PATH } from "@/constants/routingPath";
-import { formatCurrency } from "../utils";
+import { formatCurrency } from "@/utils/currencyFormat";
 
 
 type PaymentRequestFormProps = {
@@ -377,13 +375,13 @@ export default function PaymentRequestForm({ contacts, formState, onNext }: Paym
               onClick={() => {
                 if (validate()) {
                   let data: PaymentRequestData = {
-                      amount: amount,
-                      notes: notes,
-                      dueDate: dueDate,
-                      files: files,
-                      selectedContact: getSelectedContact(),
-                      displayName: displayName,
-                      sendMail: false
+                    amount: amount,
+                    notes: notes,
+                    dueDate: dueDate,
+                    files: files,
+                    selectedContact: getSelectedContact(),
+                    displayName: displayName,
+                    sendMail: false
                   }
                   onNext(data)
                 }

@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { PaymentRequestData } from "../state-types"
 import { ArrowLeft } from "lucide-react";
-import { formatCurrency } from "../utils";
+import { formatCurrency } from "@/utils/currencyFormat";
 import { Input } from "@/components/ui/input";
 import AvailablePaymentMethods from "@/components/AvailablePaymentMethods";
 import { useOrganization } from "@clerk/nextjs";

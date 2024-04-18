@@ -2,7 +2,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Command, CommandItem, CommandList } from "@/components/ui/command";
+import { Command, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
 import { updatePaymentRequest } from "@/lib/actions/paymentRequestAction";
