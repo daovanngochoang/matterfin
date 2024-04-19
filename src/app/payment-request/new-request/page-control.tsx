@@ -14,7 +14,7 @@ import { createPaymentRequest } from "@/lib/actions/paymentRequestAction";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CircleCheck, CopyIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DASHBOARD_PATH, PAYMENT_REQUEST_PATH } from "@/constants/routingPath";
 import getURL from "@/lib/utils";
 import { formatCurrency } from "@/utils/currencyFormat";
@@ -22,6 +22,9 @@ import { formatCurrency } from "@/utils/currencyFormat";
 
 
 export function PageControl({ contacts }: { contacts: Contact[] }) {
+
+  const searchParams = useSearchParams()
+  const contactId = searchParams.get('contact_id')
 
   const [stateData, setStateData] = useState<PaymentRequestData>({
     amount: "0",
@@ -32,6 +35,10 @@ export function PageControl({ contacts }: { contacts: Contact[] }) {
     displayName: "",
     sendMail: false
   })
+
+  if (contactId !== null && stateData.selectedContact === undefined) {
+    stateData.selectedContact = contacts.filter((ct) => ct.id! === parseInt(contactId)).at(0)
+  }
   const [progress, setProgress] = useState<ProgressStatus>(ProgressStatus.create)
   const [loading, setLoading] = useState<boolean>(false)
   const router = useRouter();
@@ -55,7 +62,6 @@ export function PageControl({ contacts }: { contacts: Contact[] }) {
 
       setLoading(true)
       const { error, data } = await createPaymentRequest(formData)
-      console.log(error, data)
       if (error === undefined) {
         setStateData({ ...stateData, result: data })
         setProgress(ProgressStatus.copyLink)

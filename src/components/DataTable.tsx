@@ -83,7 +83,7 @@ export default function DataTable<TData, TValue>(
 
             <div className="flex items-center py-4 justify-between">
                 {
-                    searchColumn !== undefined ?
+                    searchColumn !== undefined || searchColumn !== "" ?
                         <Input
                             placeholder={`Filter ${searchColumn}s...`}
                             value={(table.getColumn(searchColumn)?.getFilterValue() as string) ?? ""}

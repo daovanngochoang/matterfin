@@ -224,11 +224,13 @@ export default function PaymentRequestForm({ contacts, formState, onNext }: Paym
             <Separator />
           </div>
           <PRContactDetailForm
-            onChanged={function(contact: Contact | undefined, form: UseFormReturn<PRContactDetailSchemaType>): void {
-              if (prContactDetailForm === undefined) setPrContactDetailForm(form);
-              setSelectedContact(contact);
-            }}
-            contacts={contacts} defaultData={formState.selectedContact!} />
+            onChanged={
+              function(contact: Contact | undefined, form: UseFormReturn<PRContactDetailSchemaType>): void {
+                if (prContactDetailForm === undefined) setPrContactDetailForm(form);
+                setSelectedContact(contact);
+              }}
+            contacts={contacts}
+            defaultData={formState.selectedContact!} />
         </div>
 
 

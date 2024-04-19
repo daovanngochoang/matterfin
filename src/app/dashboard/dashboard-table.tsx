@@ -40,15 +40,12 @@ const dialogContext: DialogContext = {
   }
 }
 
-
-
 export function DashboardTable({ paymentRequests }: DashboardTableType) {
   const router = useRouter()
   const [openDialog, setOpenDialog] = useState<boolean>(false)
 
   const updateStatus = async (pr: PaymentRequest, status: PaymentStatus) => {
     try {
-
       const { error } = await updatePaymentRequest(pr.id!, {
         status: status
       })

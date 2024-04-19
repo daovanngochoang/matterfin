@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
 import { CommandList } from "cmdk"
+import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { UseFormReturn, useForm } from "react-hook-form"
 import { z } from "zod"
@@ -45,7 +46,9 @@ export function PRContactDetailForm({ contacts, onChanged, defaultData }: PRCont
   const [value, setValue] = useState("")
   const [selectedContact, setSelectedContact] = useState<Contact>()
   const [selected, setSelected] = useState(false)
+  const searchParams = useSearchParams()
 
+  const contactId = searchParams.get('contact_id')
   let defaultValues = {
     firstName: "",
     lastName: "",
@@ -61,7 +64,7 @@ export function PRContactDetailForm({ contacts, onChanged, defaultData }: PRCont
     defaultValues.phone = defaultData.phone
     defaultValues.company = defaultData.company_name
   } else {
-    if (defaultData !== undefined && selectedContact === undefined){
+    if (defaultData !== undefined && selectedContact === undefined) {
       setValue(defaultData.name!)
       setSelectedContact(defaultData)
       setSelected(true)

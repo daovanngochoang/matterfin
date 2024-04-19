@@ -12,7 +12,7 @@ import { PageControl } from "./page-control";
 export default async function NewPaymentRequestPage() {
 
 
-  try {
+  try { 
     const { data, error } = await getAllContacts()
 
     return (
