@@ -17,7 +17,7 @@ import { useOrganization } from "@clerk/nextjs";
 import { OrganizationMetadata } from "@/lib/model/organizationMetadata";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader } from "@/components/ui/card";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { PaymentRequestData } from "../state-types";
 import Link from "next/link";
 import { GENERAL_CHECKOUT_PATH } from "@/constants/routingPath";

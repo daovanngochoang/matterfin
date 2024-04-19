@@ -29,7 +29,7 @@ function StatisticCard(props: StatisticCardProps) {
   const router = useRouter();
   return (
     <>
-      <Card className="flex flex-row h-[120px] justify-between items-center w-[800px] px-5 ">
+      <Card className="flex flex-row min-h-[120px] justify-between items-center min-w-[800px] px-5 ">
         <div className={StatisticCardStyle.contentContainer}>
           <p className="font-sans">Total</p>
           <p className={StatisticCardStyle.moneyStyle}>
