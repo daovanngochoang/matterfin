@@ -130,7 +130,7 @@ export function PageControl({ contacts }: { contacts: Contact[] }) {
             <div className="flex flex-col justify-center items-center gap-2">
               <CircleCheck className="w-12 h-12" color="green" />
               <div className="flex flex-col justify-center items-center">
-                <p className="text-lg">You’ve emailed a checkout linke to Charles Bonito</p>
+                <p className="text-lg">You’ve emailed a checkout link to {stateData.selectedContact?.firstname ?? ""} {stateData.selectedContact?.lastname ?? ""}</p>
                 <p>{stateData.selectedContact?.email}</p>
               </div>
             </div>
