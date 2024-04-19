@@ -52,23 +52,23 @@ export function DashboardTable({ paymentRequests }: DashboardTableType) {
       const { error } = await updatePaymentRequest(pr.id!, {
         status: status
       })
-
+ 
       if (error === undefined) {
         pr.status = PaymentStatus.PAID;
         toast({
-          title: "",
-          description: ""
+          title: "Payment status",
+          description: "successfully update payment status as " + status
         })
       } else {
         toast({
-          title: "",
-          description: "",
+          title: "Payment status",
+          description: error,
           variant: "destructive"
         })
       }
     } catch (e) {
       toast({
-        title: "",
+        title: "Payment status",
         description: (e as Error).message,
         variant: "destructive"
       })
