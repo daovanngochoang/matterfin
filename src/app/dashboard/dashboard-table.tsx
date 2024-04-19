@@ -124,7 +124,7 @@ export function DashboardTable({ paymentRequests }: DashboardTableType) {
               <Separator />
               {
                 row.original.status == PaymentStatus.PAID ?
-                  <DropdownMenuItem>
+                  <DropdownMenuItem className="flex gap-2 ">
                     <RefreshCwOff className="h-4 w-4" />
                     Mark as not paid
                   </DropdownMenuItem>

@@ -56,7 +56,9 @@ const Dashboard = async () => {
             </div>
 
 
-            <StatisticCard total={totalAmount} currency={'USD'} overdue={overDueAmount} paid={paidAmount} />
+            <div className="w-fit">
+              <StatisticCard total={totalAmount} currency={'USD'} overdue={overDueAmount} paid={paidAmount} />
+            </div>
             <DashboardTable paymentRequests={paymenRequests.data!} paymentMethods={[]} />
           </div>
         </>
