@@ -159,7 +159,7 @@ export const getPaymentRequestsByID = async (id: number): Promise<ActionResult<P
 
 export const acknowledgeRequest = async (id: number, orgId: string, paymentMethodId: number) => {
   try {
-    const { data, error } = await dataRepo.paymentRequestRepo.update(id, "anonymous", { is_acknowledged: true }, orgId!)
+    const { data, error } = await dataRepo.paymentRequestRepo.update(id, "anonymous", { is_acknowledged: true, payment_method_id: paymentMethodId}, orgId!)
     if (error === undefined) {
       return {
         data: data
