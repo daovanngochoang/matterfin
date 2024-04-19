@@ -156,9 +156,28 @@ export const getPaymentRequestsByID = async (id: number): Promise<ActionResult<P
   }
 }
 
-export const updatePaymentRequest = async (id: number, orgId: string, payReq: PaymentRequest) => {
+
+export const acknowledgeRequest = async (id: number, orgId: string, paymentMethodId: number) => {
   try {
-    const { userId } = auth()
+    const { data, error } = await dataRepo.paymentRequestRepo.update(id, "anonymous", { is_acknowledged: true }, orgId!)
+    if (error === undefined) {
+      return {
+        data: data
+      }
+    }
+    return {
+      error: error
+    }
+  } catch (e) {
+    return {
+      error: (e as Error).message
+    }
+  }
+}
+
+export const updatePaymentRequest = async (id: number, payReq: PaymentRequest) => {
+  try {
+    const { userId, orgId } = auth()
     const { data, error } = await dataRepo.paymentRequestRepo.update(id, userId!, payReq, orgId!)
     revalidatePath(`${PAYMENT_REQUEST_PATH}/[id]`)
     if (error === undefined) {

@@ -9,6 +9,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const mail = process.env.RESEND_MAIL_ADDRESS!
 
 type ContactFormInputs = z.infer<typeof ContactFormSchema>
+
+
+
 export async function sendEmail(data: ContactFormInputs) {
   const result = ContactFormSchema.safeParse(data)
   if (result.success) {

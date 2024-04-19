@@ -16,6 +16,10 @@ import getURL from "@/lib/utils"
 import { PAYMENT_REQUEST_PATH } from "@/constants/routingPath"
 import { toast } from "@/components/ui/use-toast"
 import { Badge } from "@/components/ui/badge"
+import { sendEmail } from "@/lib/actions/mailService"
+import { useState } from "react"
+import { updatePaymentRequest } from "@/lib/actions/paymentRequestAction"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 
 
 type DashboardTableType = {
@@ -23,8 +27,75 @@ type DashboardTableType = {
   paymentMethods: PaymentMethod[]
 }
 
+type DialogContext = {
+  title: string,
+  desc: string,
+  action: () => Promise<void>,
+}
+const dialogContext: DialogContext = {
+  title: "",
+  desc: "",
+  action: function(): Promise<void> {
+    throw new Error("Function not implemented.")
+  }
+}
+
+
+
 export function DashboardTable({ paymentRequests }: DashboardTableType) {
   const router = useRouter()
+  const [openDialog, setOpenDialog] = useState<boolean>(false)
+
+  const updateStatus = async (pr: PaymentRequest, status: PaymentStatus) => {
+    try {
+
+      const { error } = await updatePaymentRequest(pr.id!, {
+        status: status
+      })
+
+      if (error === undefined) {
+        pr.status = PaymentStatus.PAID;
+        toast({
+          title: "",
+          description: ""
+        })
+      } else {
+        toast({
+          title: "",
+          description: "",
+          variant: "destructive"
+        })
+      }
+    } catch (e) {
+      toast({
+        title: "",
+        description: (e as Error).message,
+        variant: "destructive"
+      })
+    }
+  }
+
+  const resendEmail = async (pr: PaymentRequest) => {
+    try {
+      await sendEmail({
+        email: pr.contact?.email!,
+        name: pr.display_name!,
+        message: getURL(`${PAYMENT_REQUEST_PATH}/${pr.id}`),
+        subject: "New payment request from " + pr.display_name
+      })
+      toast({
+        title: "Resend email",
+        description: "Email is resended successfully"
+      })
+    } catch (e) {
+      toast({
+        title: "Resend email",
+        description: (e as Error).message,
+        variant: "destructive"
+      })
+    }
+
+  };
   const columns: ColumnDef<PaymentRequest>[] = [
     {
       accessorKey: "created_at",
@@ -124,17 +195,33 @@ export function DashboardTable({ paymentRequests }: DashboardTableType) {
               <Separator />
               {
                 row.original.status == PaymentStatus.PAID ?
-                  <DropdownMenuItem className="flex gap-2 ">
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      dialogContext.title = "Mark as not paid"
+                      dialogContext.desc = "Do you really want to mark this request as not paid?"
+                      const status = new Date(row.original.expired_date!) > new Date(Date.now()) ? PaymentStatus.ACTIVE : PaymentStatus.OVERDUE;
+                      dialogContext.action = async () => await updateStatus(row.original, status);
+                      setOpenDialog(true)
+                    }}
+                    className="flex gap-2 ">
                     <RefreshCwOff className="h-4 w-4" />
                     Mark as not paid
                   </DropdownMenuItem>
-                  : <DropdownMenuItem className="flex gap-2 ">
+                  : <DropdownMenuItem
+                    onClick={async () => {
+                      dialogContext.title = "Mark as paid"
+                      dialogContext.desc = "Do you really want to mark this request as paid?"
+                      dialogContext.action = async () => await updateStatus(row.original, PaymentStatus.PAID);
+                      setOpenDialog(true)
+                    }}
+                    className="flex gap-2 ">
                     <CircleCheckBig className="h-4 w-4" />
                     Mark as Paid
                   </DropdownMenuItem>
-
               }
-              <DropdownMenuItem className="flex gap-2 ">
+              <DropdownMenuItem
+                onClick={async () => await resendEmail(row.original)}
+                className="flex gap-2 ">
                 <Mail className="h-4 w-4" />
                 Resend Email
               </DropdownMenuItem>
@@ -177,6 +264,24 @@ export function DashboardTable({ paymentRequests }: DashboardTableType) {
   ]
   return (
     <div>
+      <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{dialogContext.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {dialogContext.desc}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => setOpenDialog(false)}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => dialogContext.action()}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <p className="font-semibold text-xl">Action List</p>
       <DataTable columns={columns} data={paymentRequests} searchColumn={"contact"} />
     </div>

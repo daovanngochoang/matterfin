@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Command, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
-import { updatePaymentRequest } from "@/lib/actions/paymentRequestAction";
+import { acknowledgeRequest, updatePaymentRequest } from "@/lib/actions/paymentRequestAction";
 import { PaymentMethod } from "@/lib/model/paymentMethod";
 import { Lightbulb } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -35,10 +35,7 @@ export function Acknowledge({ orgId, paymentMethods, pr }: { orgId: string, paym
 
   const acknowledge = async (methodId: number) => {
     try {
-      const updatedData = await updatePaymentRequest(pr.id!, orgId, {
-        payment_method_id: methodId,
-        is_acknowledged: true,
-      });
+      const updatedData = await acknowledgeRequest(pr.id!, orgId,  methodId);
       if (updatedData.error === undefined) {
         toast({
           title: "Acknowledgement",
